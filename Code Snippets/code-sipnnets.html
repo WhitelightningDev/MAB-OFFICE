@@ -1,0 +1,48 @@
+// if (req.url.includes(environment.help)) { // this.headers = { //
+'Content-Type': 'text/plain', // 'X-API-Key':
+'F8076FF792F565BBD1EC5CC5EDE95C14', // }; // } else if
+(req.url.includes(environment.FINGERPRINT_STATUS_URL)) { // this.headers = {};
+// } else { // this.headers = { // Auth_Key:
+'745424A4-65D7-4CC0-B4DE-8EE08074F865', // }; // } // req = req.clone({ //
+setHeaders: this.headers, // });
+
+<div
+  class="modal fade"
+  id="popiaModal"
+  tabindex="-1"
+  aria-labelledby="popiaModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg scrollable-content">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="popiaModalLabel">POPIA Act Acceptance</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body scrollable-content">
+        <p>Please review and accept the POPIA before proceeding:</p>
+        <div *ngFor="let question of questions">
+          <strong>{{ question.title }}</strong>
+          <p [innerHTML]="question.question"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="handleCancelOrClose()"
+        >
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="acceptPOPIA">
+          Accept
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

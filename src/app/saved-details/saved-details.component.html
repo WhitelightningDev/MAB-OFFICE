@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar class="ion-no-padding ion-no-margin">
+    <ion-buttons (click)="handleBackNavigation()" slot="start">
+      <ion-back-button default-href="/visitor-page"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Saved Visitor Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item
+      *ngFor="let visitor of visitors; let i = index"
+      (click)="openVisitorDetails(visitor)"
+      detail-push
+    >
+      <ion-label>
+        <h1>{{ visitor.name }} {{ visitor.surname }}</h1>
+        <h3>{{ visitor.date }}</h3>
+        <!-- Display the formatted date -->
+
+        <h4>POPIA Accepted: {{ visitor.acceptedPOPIA }}</h4>
+      </ion-label>
+      <ion-button
+        slot="end"
+        color="danger"
+        (click)="deleteVisitor(i, $event)"
+        fill="outline"
+      >
+        Delete
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

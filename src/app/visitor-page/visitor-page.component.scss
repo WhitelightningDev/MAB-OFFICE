@@ -1,0 +1,214 @@
+/* ============================ */
+/* Container Styles             */
+/* ============================ */
+.container {
+  overflow: visible; /* Prevent browser scrollbar */
+  color: #000000;
+  padding: 0;
+  height: calc(150vh); /* Full height minus header */
+}
+
+/* ============================ */
+/* Scrollable Content Styles     */
+/* ============================ */
+.scrollable-content {
+  max-height: 85vh; /* Limit height to ensure it fits within the viewport */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding-right: 20px; /* Add padding to prevent content from touching the edge */
+}
+
+/* Hide scrollbar for WebKit browsers */
+.scrollable-content::-webkit-scrollbar {
+  display: none; /* Hide scrollbar */
+}
+
+/* ============================ */
+/* Modal Backdrop Styles        */
+/* ============================ */
+.modal-backdrop {
+  opacity: 2.5; /* Adjust opacity to your liking */
+  z-index: 1040; /* Set to sit below toast notifications */
+}
+
+/* ============================ */
+/* Autofill Confirmation Modal Styles */
+/* ============================ */
+#autofillConfirmationModal {
+  z-index: 1060; /* Ensure it sits above modals and backdrop */
+}
+
+/* Ensure modal backdrop sits behind */
+.modal-backdrop {
+  opacity: 0.5; /* Adjust opacity to your liking */
+  z-index: 1040; /* Set to sit below toast notifications */
+}
+
+/* ============================ */
+/* Modal Styles                 */
+/* ============================ */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed position for modal */
+  z-index: 1050; /* Sit on top of backdrop */
+  color: #000000; /* Text color */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: hidden; /* Prevent browser scrollbar */
+  background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+}
+
+/* ============================ */
+/* Modal Dialog Styles          */
+/* ============================ */
+.modal-dialog {
+  margin: 1.75rem auto; /* Center dialog */
+  max-height: 90vh; /* Limit height of modal dialog */
+}
+
+/* ============================ */
+/* Modal Content Styles         */
+/* ============================ */
+.modal-content {
+  background-color: #fff; /* White background */
+  color: #000000; /* Text color */
+  border: none; /* No border */
+  border-radius: 0.5rem; /* Rounded corners */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* ============================ */
+/* Modal Header and Footer      */
+/* ============================ */
+.modal-header,
+.modal-footer {
+  border: none; /* Remove border */
+}
+
+.modal-header {
+  background-color: #f8f9fa; /* Light background for the header */
+  border-bottom: 2px solid #007bff; /* Blue border at the bottom */
+}
+
+.modal-title {
+  font-weight: bold; /* Bold title */
+  color: #343a40; /* Dark text color */
+}
+
+/* ============================ */
+/* Modal Body Styles            */
+/* ============================ */
+.modal-body {
+  padding: 2rem; /* More padding for a spacious feel */
+  color: #495057; /* Darker text for readability */
+  background-color: #ffffff; /* White background */
+}
+
+/* ============================ */
+/* Modal Footer Styles          */
+/* ============================ */
+.modal-footer {
+  display: flex; /* Flexbox for alignment */
+  justify-content: center; /* Center the buttons */
+  padding: 1rem 2rem; /* Adjust padding */
+}
+
+.modal-footer .btn {
+  margin: 0 10px; /* Spacing between buttons */
+}
+
+/* ============================ */
+/* Button Styles                */
+/* ============================ */
+.button-clear {
+  color: #000000;
+}
+
+.success-toast {
+  background-color: green;
+}
+
+/* Show the toast */
+.success-toast.show {
+  opacity: 1; /* Full opacity when shown */
+  transform: translateY(0); /* Move to original position */
+  background-color: green;
+}
+
+/* Optional: For transition effects */
+.custom-toast.hide {
+  opacity: 0; /* Fade out */
+  transform: translateY(-20px); /* Move up when hiding */
+}
+
+/* ============================ */
+/* Custom Styles for Buttons    */
+/* ============================ */
+.popia-cancel-btn {
+  background-color: #dc3545; /* Red background for POPIA modal cancel */
+  border: none;
+  color: white;
+}
+
+.popia-cancel-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+.success-cancel-btn {
+  background-color: #28a745; /* Green background for success toast */
+  border: none;
+  color: white;
+}
+
+.success-cancel-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+/* ============================ */
+/* Additional Styles            */
+/* ============================ */
+body {
+  background-color: #609bd4;
+}
+
+.modal-content {
+  border-radius: 8px;
+}
+
+.input-group-text {
+  background-color: #609bd4;
+}
+
+.custom-input {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.signature-container {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+h2 {
+  color: #343a40;
+}
+
+.btn-primary {
+  background-color: #609bd4;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #609bd4;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}

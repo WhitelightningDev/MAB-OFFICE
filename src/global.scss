@@ -1,0 +1,98 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Ion Header Styles */
+
+.ion-page {
+  position: absolute;
+  flex-direction: column;
+  justify-content: inherit; /* Change from space-between to flex-start */
+}
+
+.card {
+  margin-top: 0; /* Remove top margin from all cards */
+}
+
+body {
+  background: url("./assets/BACKDROP.png");
+  background-size: cover;
+  margin: 0; /* Remove default margin */
+  height: 100vh; /* Full height */
+}
+
+/* Ion Content Styles */
+ion-content {
+  background-size: 35%;
+  background-repeat: no-repeat;
+  background-image: url("./assets/Backup_logo.png");
+  position: relative;
+  --background: transparent;
+  height: 100%;
+}
+
+.modal-backdrop {
+  opacity: 2.5; /* Adjust opacity to your liking */
+  z-index: -1; /* Set to sit below toast notifications */
+}
+
+@media (max-width: 768px) {
+  .custom-toast {
+    font-size: 14px; /* Smaller font size on mobile */
+    padding: 8px 16px; /* Adjust padding for smaller screens */
+  }
+
+  .modal-content {
+    margin: 10px; /* Add some margin for smaller screens */
+    max-height: 90vh; /* Limit height for mobile */
+  }
+}
+
+button {
+  color: white;
+  border-radius: 5px;
+  padding: 11px;
+  background-color: #71b6f9;
+}
+
+button:hover {
+  color: white;
+  border-radius: 5px;
+  padding: 11px;
+  background-color: #609bd4;
+  border-color: #5a92c7;
+}
+
+.bt {
+  margin: 0;
+}
+
+.btn-primary {
+  cursor: pointer; /* Change cursor to pointer for better UX */
+}
+
+// .custom-toast {
+//   color: #5a92c7;
+//   width: 100%;
+//   height: 90%;
+//   font-size: 25px;
+//   text-align: center;
+// }
+
+// COMMENTED OUT SCSS STYLES ONLY
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/palettes/dark.system.css";
+@import "@ionic/angular/css/core.css";

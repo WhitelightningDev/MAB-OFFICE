@@ -1,0 +1,103 @@
+/* Card styles */
+ion-card {
+  margin-bottom: 16px; /* Space between cards */
+  margin: 30px; /* Overall margin around cards */
+}
+
+/* Top margin for elements with the class ion-margin-top */
+.ion-margin-top {
+  padding: 8px; /* Padding applied to the top margin */
+}
+
+/* Styles for delete button */
+.delete-button {
+  display: flex; /* Use flexbox for layout */
+  justify-content: center; /* Center align content horizontally */
+  align-items: center; /* Center align content vertically */
+  background-color: #e74c3c; /* Bright red color */
+  color: white; /* Text color */
+  border-radius: 30px; /* Rounded corners */
+  font-weight: bold; /* Bold text */
+  font-size: 16px; /* Font size */
+  padding: 10px 20px; /* Padding around button */
+  margin-top: 15px; /* Top margin */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for elevation */
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
+
+  /* Icon styles inside the delete button */
+  ion-icon {
+    margin-right: 8px; /* Space between icon and text */
+    font-size: 20px; /* Icon font size */
+  }
+
+  /* Hover state styles */
+  &:hover {
+    background-color: #c0392b; /* Darker red on hover */
+  }
+
+  /* Active state styles */
+  &:active {
+    background-color: #a93226; /* Even darker on click */
+  }
+}
+
+/* Modal styles */
+ion-modal {
+  --background: #ffffff; /* Ensures modal background is white */
+  --border-radius: 10px; /* Adds rounded corners to the modal */
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adds shadow to make the modal stand out */
+}
+
+/* Header and footer styles */
+ion-header,
+ion-footer {
+  --background: #f8f9fa; /* Light background for header and footer */
+}
+
+/* Heading styles within ion-content */
+ion-content h2 {
+  color: #333; /* Text color */
+  text-align: center; /* Center text */
+}
+
+/* Button styles */
+ion-button {
+  margin: 10px; /* Margin around buttons */
+}
+
+/* List styles */
+ion-list {
+  padding: 0; /* Remove padding from the list */
+}
+
+/* Item styles within the list */
+ion-item {
+  --background: #f9f9f9; /* Background color of the list item */
+  --color: #333; /* Text color */
+
+  padding: 10px 15px; /* Padding inside the item */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+  transition: background-color 0.3s ease; /* Smooth background color transition */
+
+  justify-content: left; /* Align content with space between */
+  align-items: start; /* Center the items vertically */
+}
+
+/* Label styles within items */
+ion-label {
+  flex: 1; /* Allow label to take available space */
+  text-align: left; /* Explicitly set text alignment to left */
+}
+
+/* Styles for buttons in the list */
+ion-button {
+  --background: #ff4d4d; /* Background color of the delete button */
+  --color: white; /* Text color of the delete button */
+  border-radius: 4px; /* Rounded corners */
+  padding: 6px 12px; /* Padding for button */
+}
+
+/* Hover state for buttons */
+ion-button:hover {
+  --background: #ff1a1a; /* Darker background on hover */
+}

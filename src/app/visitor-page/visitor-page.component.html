@@ -1,0 +1,316 @@
+<!-- Header with the back button that takes users to the home page -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Back</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<!-- POPIA Modal -->
+<div
+  class="modal fade"
+  id="popiaModal"
+  tabindex="-1"
+  aria-labelledby="popiaModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg scrollable-content">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="popiaModalLabel">POPIA Act Acceptance</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body scrollable-content">
+        <p>Please review and accept the POPIA before proceeding:</p>
+        <div *ngFor="let question of questions">
+          <strong>{{ question.title }}</strong>
+          <p [innerHTML]="question.question"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="handleCancelOrClose()"
+        >
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="acceptPOPIA">
+          Accept
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container p-4 scrollable-content">
+  <h1 class="mb-4 text-center">Visitor Registration Form</h1>
+  <p>Please fill in the form below to register your details:</p>
+
+  <div class="form-group mb-3">
+    <label for="name">Name:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-user"></i></span>
+      <input
+        type="text"
+        id="name"
+        required
+        class="form-control custom-input"
+        placeholder="Enter your name"
+        [(ngModel)]="name"
+        (ngModelChange)="onNameChange()"
+        [disabled]="!acceptedPOPIA"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="surname">Surname:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+      <input
+        type="text"
+        id="surname"
+        required
+        class="form-control custom-input"
+        placeholder="Enter your surname"
+        [(ngModel)]="surname"
+        (ngModelChange)="onSurnameChange()"
+        [disabled]="!acceptedPOPIA"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="contact">Contact:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-phone"></i></span>
+      <input
+        type="tel"
+        id="contact"
+        min="10"
+        max="10"
+        required
+        class="form-control custom-input"
+        placeholder="Enter your contact"
+        [(ngModel)]="contact"
+        [disabled]="!acceptedPOPIA"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="email">Email Address:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+      <input
+        type="email"
+        id="email"
+        required
+        class="form-control custom-input"
+        placeholder="Enter your email"
+        [(ngModel)]="email"
+        [disabled]="!acceptedPOPIA"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="purpose">Purpose of Visit:</label>
+    <div class="input-group">
+      <span class="input-group-text"
+        ><i class="fas fa-clipboard-list"></i
+      ></span>
+      <select
+        id="purpose"
+        required
+        class="form-control custom-input"
+        [(ngModel)]="purpose"
+        (change)="onPurposeChange()"
+        [disabled]="!acceptedPOPIA"
+      >
+        <option value="">Select Purpose</option>
+        <option value="Scheduled Meeting">Scheduled Meeting</option>
+        <option value="Client Visit">Client Visit</option>
+        <option value="Vendor or Supplier Visit">
+          Vendor or Supplier Visit
+        </option>
+        <option value="Training or Workshop">Training or Workshop</option>
+        <option value="Deliveries or Collections">
+          Deliveries or Collections
+        </option>
+        <option value="Service Rendering">Service Rendering</option>
+        <option value="Job Interview">Job Interview</option>
+        <option value="Other">Other: (please specify)</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="isOtherReasonVisible">
+    <div class="input-group mb-3">
+      <span class="input-group-text"><i class="fas fa-ellipsis-h"></i></span>
+      <input
+        type="text"
+        [(ngModel)]="otherReason"
+        placeholder="Please specify other reason"
+        class="form-control custom-input"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="selfie">Selfie:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-camera"></i></span>
+      <input
+        type="file"
+        id="selfie"
+        required
+        class="form-control custom-input"
+        accept="image/*"
+        capture="environment"
+        (change)="handleSelfieChange($event)"
+        [disabled]="!acceptedPOPIA"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="signature">Signature:</label>
+    <div class="signature-container mb-2">
+      <canvas
+        id="signatureCanvas"
+        width="300"
+        height="100"
+        style="border: 1px solid #5a5a5a; background-color: azure"
+      ></canvas>
+    </div>
+    <button class="btn btn-secondary" (click)="clearCanvas()">Clear</button>
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="organization">Organization:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-building"></i></span>
+      <input
+        type="text"
+        id="organization"
+        required
+        class="form-control custom-input"
+        placeholder="Enter your organization"
+        [(ngModel)]="organization"
+        [disabled]="!acceptedPOPIA"
+      />
+    </div>
+  </div>
+
+  <div class="form-group mb-3 text-center">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="onSubmit()"
+      [disabled]="!isFormValid()"
+    >
+      Submit
+    </button>
+  </div>
+
+  <!-- Success Modal -->
+  <div
+    class="modal fade"
+    id="successModal"
+    tabindex="-1"
+    aria-labelledby="successModalLabel"
+    aria-hidden="true"
+    (shown.bs.modal)="onSuccessModalShown()"
+  >
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content text-center">
+        <div class="modal-header">
+          <h5 class="modal-title" id="successModalLabel">Success!</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            (click)="redirectToSavedDetails()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <i
+            class="fas fa-check-circle"
+            style="color: green; font-size: 48px"
+          ></i>
+          <p>Information saved successfully!</p>
+        </div>
+        <div class="modal-footer">
+          <button
+            (click)="redirectToSavedDetails()"
+            type="button"
+            class="btn success-cancel-btn"
+            data-bs-dismiss="modal"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Autofill Confirmation Modal -->
+  <!-- Autofill Confirmation Modal -->
+  <div
+    class="modal fade"
+    id="autofillConfirmationModal"
+    tabindex="-1"
+    aria-labelledby="autofillConfirmationModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="autofillConfirmationModalLabel">
+            Use Previous Details?
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            You have previously submitted details. Do you want to use them to
+            autofill the form?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            No
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="autofillForm()"
+            data-bs-dismiss="modal"
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
