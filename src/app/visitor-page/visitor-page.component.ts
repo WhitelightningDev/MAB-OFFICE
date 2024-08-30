@@ -29,6 +29,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   surname: string = '';
   contact: string = '';
   email: string = '';
+  idn: string = '';
   purpose: string = '';
   date: string = '';
   organization: string = '';
@@ -126,6 +127,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.name = this.previousVisitorData.name;
       this.surname = this.previousVisitorData.surname;
       this.contact = this.previousVisitorData.contact;
+      this.idn = this.previousVisitorData.idn;
       this.email = this.previousVisitorData.email;
       this.organization = this.previousVisitorData.organization;
       // Add any other fields you want to autofill
@@ -207,6 +209,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.name.trim() !== '' &&
       this.surname.trim() !== '' &&
       this.contact.trim().length === 10 && // Adjust length check as needed
+      this.idn.trim().length === 13 &&
       this.email.trim() !== '' &&
       this.purpose.trim() !== '' &&
       (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
@@ -249,6 +252,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       surname: this.surname,
       contact: this.contact,
       email: this.email,
+      idn: this.idn,
       purpose: reasonForVisit,
       date_of_entry: date_of_entry,
       organization: this.organization,
@@ -287,6 +291,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     if (!this.name.trim()) messages.push('Name is required.');
     if (!this.surname.trim()) messages.push('Surname is required.');
     if (!this.email.trim()) messages.push('Email Address is required.');
+    if (!this.idn.trim()) messages.push('id number is required');
     if (!this.purpose.trim()) messages.push('Purpose of Visit is required.');
     if (this.purpose === 'Other' && !this.otherReason.trim())
       messages.push('Please specify the Other Reason.');
@@ -480,7 +485,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
   redirectToSavedDetails() {
     // Redirect to the saved details page
-    this.router.navigate(['/saved-details']);
+    this.router.navigate(['/home']);
   }
 
   handleBackNavigation() {

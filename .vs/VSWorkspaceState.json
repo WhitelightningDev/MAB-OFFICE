@@ -3,8 +3,8 @@
     "",
     "\\src",
     "\\src\\app",
-    "\\src\\app\\home"
+    "\\src\\app\\saved-details"
   ],
-  "SelectedNode": "\\src\\app\\home\\home.page.html",
+  "SelectedNode": "\\src\\app\\visitor-page",
   "PreviewInSolutionExplorer": false
 }
