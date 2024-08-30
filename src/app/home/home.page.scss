@@ -38,8 +38,9 @@ ion-header {
 
 /* Hover effect for button */
 .visitor-button:hover {
-  background-color: #78c8f8; /* Slightly darker on hover */
-  transform: translateY(-2px); /* Lift effect */
+  border-radius: 20px;
+  background-color: #78c7f82c; /* Slightly darker on hover */
+  transform: translateY(-20px); /* Lift effect */
 }
 
 /* ============================ */
@@ -95,7 +96,7 @@ button {
 /* Custom Toast Styles          */
 /* ============================ */
 .custom-toast {
-  background-color: #007bff; /* Background color */
+  // background-color: #007bff; /* Background color */
   color: white; /* White text color */
   border-radius: 8px; /* Rounded corners */
   padding: 10px 20px; /* Padding for content */

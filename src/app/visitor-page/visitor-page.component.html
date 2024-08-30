@@ -67,7 +67,7 @@
         placeholder="Enter your name"
         [(ngModel)]="name"
         (ngModelChange)="onNameChange()"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -84,7 +84,7 @@
         placeholder="Enter your surname"
         [(ngModel)]="surname"
         (ngModelChange)="onSurnameChange()"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -102,7 +102,7 @@
         class="form-control custom-input"
         placeholder="Enter your contact"
         [(ngModel)]="contact"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -118,7 +118,7 @@
         class="form-control custom-input"
         placeholder="Enter your email"
         [(ngModel)]="email"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -126,15 +126,15 @@
   <div class="form-group mb-3">
     <label for="idn">ID Number:</label>
     <div class="input-group">
-      <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+      <span class="input-group-text"><i class="fas fa-id-card"></i></span>
       <input
-        type="idn"
+        type="text"
         id="idn"
         required
         class="form-control custom-input"
         placeholder="Enter your ID Number"
         [(ngModel)]="idn"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -151,7 +151,7 @@
         class="form-control custom-input"
         [(ngModel)]="purpose"
         (change)="onPurposeChange()"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       >
         <option value="">Select Purpose</option>
         <option value="Scheduled Meeting">Scheduled Meeting</option>
@@ -194,7 +194,7 @@
         accept="image/*"
         capture="environment"
         (change)="handleSelfieChange($event)"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -223,7 +223,7 @@
         class="form-control custom-input"
         placeholder="Enter your organization"
         [(ngModel)]="organization"
-        [disabled]="!acceptedPOPIA"
+        [disabled]="!accepted_popia"
       />
     </div>
   </div>
@@ -282,7 +282,6 @@
   </div>
 
   <!-- Autofill Confirmation Modal -->
-  <!-- Autofill Confirmation Modal -->
   <div
     class="modal fade"
     id="autofillConfirmationModal"
@@ -291,10 +290,10 @@
     aria-hidden="true"
   >
     <div class="modal-dialog modal-sm">
-      <div class="modal-content">
+      <div class="modal-content text-center">
         <div class="modal-header">
           <h5 class="modal-title" id="autofillConfirmationModalLabel">
-            Use Previous Details?
+            Confirmation
           </h5>
           <button
             type="button"
@@ -305,8 +304,8 @@
         </div>
         <div class="modal-body">
           <p>
-            You have previously submitted details. Do you want to use them to
-            autofill the form?
+            The fields will be filled with your information. Do you want to
+            continue?
           </p>
         </div>
         <div class="modal-footer">
@@ -315,15 +314,14 @@
             class="btn btn-secondary"
             data-bs-dismiss="modal"
           >
-            No
+            Cancel
           </button>
           <button
             type="button"
             class="btn btn-primary"
             (click)="autofillForm()"
-            data-bs-dismiss="modal"
           >
-            Yes
+            Continue
           </button>
         </div>
       </div>

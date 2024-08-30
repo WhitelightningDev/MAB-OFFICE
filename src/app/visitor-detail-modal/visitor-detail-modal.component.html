@@ -56,7 +56,7 @@
       <ion-card-header>
         <ion-card-title>Date of Entry</ion-card-title>
       </ion-card-header>
-      <ion-card-content>{{ visitor.date }}</ion-card-content>
+      <ion-card-content>{{ visitor.date_of_entry }}</ion-card-content>
     </ion-card>
 
     <ion-card class="detail-card">
@@ -71,7 +71,7 @@
         <ion-card-title>POPIA Accepted</ion-card-title>
       </ion-card-header>
       <ion-card-content>{{
-        visitor.acceptedPOPIA ? "Yes" : "No"
+        visitor.accepted_popia ? "Yes" : "No"
       }}</ion-card-content>
     </ion-card>
 
@@ -80,10 +80,10 @@
         <ion-card-title>Signature</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-thumbnail *ngIf="visitor.signatureImage">
-          <img [src]="visitor.signatureImage" alt="Signature" />
+        <ion-thumbnail *ngIf="visitor.signature">
+          <img [src]="visitor.signature" alt="Signature" />
         </ion-thumbnail>
-        <p *ngIf="!visitor.signatureImage">No signature available.</p>
+        <p *ngIf="!visitor.signature">No signature available.</p>
       </ion-card-content>
     </ion-card>
 
@@ -93,12 +93,12 @@
       </ion-card-header>
       <ion-card-content>
         <ion-thumbnail
-          *ngIf="visitor.selfieImage"
-          (click)="enlargeImage(visitor.selfieImage)"
+          *ngIf="visitor.selfie"
+          (click)="enlargeImage(visitor.selfie)"
         >
-          <img [src]="visitor.selfieImage" alt="Selfie" />
+          <img [src]="visitor.selfie" alt="Selfie" />
         </ion-thumbnail>
-        <p *ngIf="!visitor.selfieImage">No selfie available.</p>
+        <p *ngIf="!visitor.selfie">No selfie available.</p>
       </ion-card-content>
     </ion-card>
   </div>

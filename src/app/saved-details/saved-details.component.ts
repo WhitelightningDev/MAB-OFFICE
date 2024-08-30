@@ -13,7 +13,7 @@ import { Router } from '@angular/router'; // Import Router
 })
 export class SavedDetailsComponent implements OnInit {
   visitors: any[] = [];
-  private apiUrl = 'http://10.0.0.175:3000/api/visitors';
+  private apiUrl = 'http://192.168.5.30:5000/visitors';
   successToast: any;
 
   constructor(
@@ -31,20 +31,22 @@ export class SavedDetailsComponent implements OnInit {
   private loadVisitorData() {
     this.http.get<any[]>(this.apiUrl).subscribe(
       (data) => {
-        console.log('Visitor data received:', data); // Log the entire response
-
-        // Format the date for each visitor
+        console.log('Visitor data received:', data);
         this.visitors = data.map((visitor) => ({
           ...visitor,
-          date: this.datePipe.transform(visitor.dateOfEntry, 'short'), // Use dateOfEntry
-          selfieImage: visitor.selfie, // Retrieve the selfie image URL
-          signatureImage: visitor.signature, // Retrieve the signature image URL
+          date: this.datePipe.transform(visitor.date_of_entry, 'short'),
         }));
-
-        console.log('Processed visitors:', this.visitors); // Log the processed visitors
+        console.log('Processed visitors:', this.visitors);
       },
       (error) => {
         console.error('Error fetching visitor data:', error);
+        // Log the error details
+        if (error.status) {
+          console.error(`Error Status: ${error.status}`);
+        }
+        if (error.message) {
+          console.error(`Error Message: ${error.message}`);
+        }
         this.showAlert(
           'Error',
           'Could not load visitor data. Please try again later.'

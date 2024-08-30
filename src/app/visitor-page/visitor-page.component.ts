@@ -33,9 +33,9 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   purpose: string = '';
   date: string = '';
   organization: string = '';
-  signatureImage: string | null = null;
-  selfieImage: string | null = null;
-  acceptedPOPIA: boolean = false;
+  signature: string | null = null;
+  selfie: string | null = null;
+  accepted_popia: boolean = false;
 
   // New properties for custom reason
   otherReason: string = ''; // Holds custom reason input
@@ -52,7 +52,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
   // Method called when POPIA acceptance changes
   onPOPIAAccepted(accepted: boolean) {
-    this.acceptedPOPIA = accepted;
+    this.accepted_popia = accepted;
     if (accepted) {
       this.enableFormFields();
       this.hideModal();
@@ -178,15 +178,15 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
             ctx.drawImage(img, 0, 0, width, height);
 
             // Convert canvas to base64
-            this.selfieImage = canvas.toDataURL('image/jpeg'); // Save selfie image
+            this.selfie = canvas.toDataURL('image/jpeg'); // Save selfie image
 
             // Debugging line to log the selfie image data length
-            console.log('Selfie image data length:', this.selfieImage.length);
+            console.log('Selfie image data length:', this.selfie.length);
 
             // Optionally, you can also log a small part of the image data for verification
             console.log(
               'Selfie image data preview:',
-              this.selfieImage.substring(0, 30)
+              this.selfie.substring(0, 30)
             );
           } else {
             console.error('Failed to get canvas context');
@@ -214,14 +214,14 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.purpose.trim() !== '' &&
       (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
       this.organization.trim() !== '' && // Ensure organization is not empty
-      this.acceptedPOPIA // Ensure POPIA is accepted
+      this.accepted_popia // Ensure POPIA is accepted
     );
   }
 
   // Handle form submission
   onSubmit() {
     // Check if the user accepted the POPIA terms
-    if (!this.acceptedPOPIA) {
+    if (!this.accepted_popia) {
       this.presentToast('You must accept the POPIA terms to proceed.');
       return;
     }
@@ -256,33 +256,31 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       purpose: reasonForVisit,
       date_of_entry: date_of_entry,
       organization: this.organization,
-      signatureImage: this.signatureImage, // Make sure signatureImage is captured
-      selfieImage: this.selfieImage, // Make sure selfieImage is captured
-      acceptedPOPIA: this.acceptedPOPIA,
+      signature: this.signature, // Make sure signatureImage is captured
+      selfie: this.selfie, // Make sure selfieImage is captured
+      accepted_popia: this.accepted_popia,
     };
 
     // Log selfie and signature images for debugging
-    console.log('Selfie Image:', this.selfieImage);
-    console.log('Signature Image:', this.signatureImage);
+    console.log('Selfie Image:', this.selfie);
+    console.log('Signature Image:', this.signature);
 
     // Make the HTTP POST request to the backend
-    this.http
-      .post('http://10.0.0.175:3000/api/visitors', visitorData)
-      .subscribe({
-        next: (response) => {
-          console.log('Visitor data submitted successfully:', response);
-          this.showSuccessModal();
-          setTimeout(() => {
-            this.router.navigate(['/home']); // Navigate after a delay
-          }, 2000); // Adjust the delay as needed
-        },
-        error: (err) => {
-          console.error('Error submitting visitor data:', err);
-          this.presentToast(
-            'An error occurred while submitting data. Please try again.'
-          );
-        },
-      });
+    this.http.post('http://192.168.5.30:5000/checkin', visitorData).subscribe({
+      next: (response) => {
+        console.log('Visitor data submitted successfully:', response);
+        this.showSuccessModal();
+        setTimeout(() => {
+          this.router.navigate(['/home']); // Navigate after a delay
+        }, 2000); // Adjust the delay as needed
+      },
+      error: (err) => {
+        console.error('Error submitting visitor data:', err);
+        this.presentToast(
+          'An error occurred while submitting data. Please try again.'
+        );
+      },
+    });
   }
 
   // Validation for the form fields
@@ -458,8 +456,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     this.isDrawing = false;
     this.ctx.closePath();
     // Capture signature image when drawing stops
-    this.signatureImage = this.canvas.toDataURL(); // Ensure this captures the signature
-    console.log('Signature image data:', this.signatureImage); // Debugging line
+    this.signature = this.canvas.toDataURL(); // Ensure this captures the signature
+    console.log('Signature image data:', this.signature); // Debugging line
   }
 
   // Show success modal
