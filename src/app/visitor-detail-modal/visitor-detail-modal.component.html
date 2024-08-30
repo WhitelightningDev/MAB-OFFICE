@@ -1,77 +1,107 @@
 <!-- Header section for the modal or page -->
 <ion-header>
+  <ion-title class="header-title">Visitor Details</ion-title>
   <ion-toolbar>
-    <!-- Toolbar container for header elements -->
-    <ion-buttons slot="start">
-      <!-- Buttons aligned to the start (left) -->
+    <!-- Title for the header -->
+    <ion-buttons slot="end">
       <ion-button (click)="dismiss()">Close</ion-button>
       <!-- Button to close the modal or page -->
     </ion-buttons>
-
-    <!-- Title displaying visitor's name and surname -->
   </ion-toolbar>
 </ion-header>
 
 <!-- Main content area -->
-<ion-content class="ion-padding">
-  <!-- Content area with padding -->
-  <ion-card>
-    <!-- Card to contain visitor details -->
+<ion-content id="main-content" class="ion-padding">
+  <ion-card class="visitor-card">
+    <!-- Card to contain visitor name -->
     <ion-card-header>
-      <!-- Header section of the card -->
-      <ion-card-title>Visitor Details</ion-card-title>
-      <ion-title>{{ visitor.name }} {{ visitor.surname }}</ion-title>
+      <ion-card-title class="visitor-name"
+        >{{ visitor.name }} {{ visitor.surname }}</ion-card-title
+      >
       <!-- Title for the card -->
     </ion-card-header>
-    <ion-card-content>
-      <!-- Main content section of the card -->
-      <div>
-        <!-- Display various visitor details -->
-        <strong>Contact:</strong> {{ visitor.contact }}<br />
-        <!-- Visitor's contact information -->
-        <strong>Email:</strong> {{ visitor.email }}<br />
+  </ion-card>
 
-        <strong>idn:</strong> {{ visitor.idn }}<br />
-        <!-- Visitor's email address -->
-        <strong>Purpose of Visit:</strong> {{ visitor.purpose }}<br />
-        <!-- Purpose of the visit -->
-        <strong>Date of Entry:</strong> {{ visitor.date }}<br />
-        <!-- Date of entry -->
-        <strong>Organization:</strong> {{ visitor.organization }}<br />
-        <!-- Organization visitor is associated with -->
-        <strong>POPIA Accepted:</strong>
-        {{ visitor.acceptedPOPIA ? "Yes" : "No" }}<br />
-        <!-- Indicates if POPIA is accepted -->
+  <div class="details-container">
+    <!-- Visitor details displayed in small cards -->
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Contact</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ visitor.contact }}</ion-card-content>
+    </ion-card>
 
-        <strong>Signature:</strong><br />
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Email</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ visitor.email }}</ion-card-content>
+    </ion-card>
+
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>ID Number</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ visitor.idn }}</ion-card-content>
+    </ion-card>
+
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Purpose of Visit</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ visitor.purpose }}</ion-card-content>
+    </ion-card>
+
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Date of Entry</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ visitor.date }}</ion-card-content>
+    </ion-card>
+
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Organization</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{ visitor.organization }}</ion-card-content>
+    </ion-card>
+
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>POPIA Accepted</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>{{
+        visitor.acceptedPOPIA ? "Yes" : "No"
+      }}</ion-card-content>
+    </ion-card>
+
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Signature</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
         <ion-thumbnail *ngIf="visitor.signatureImage">
-          <!-- Display signature image if available -->
-          <img
-            [src]="visitor.signatureImage"
-            alt="Signature"
-            style="width: 100%; max-width: 200px"
-          />
+          <img [src]="visitor.signatureImage" alt="Signature" />
         </ion-thumbnail>
         <p *ngIf="!visitor.signatureImage">No signature available.</p>
-        <!-- Message if no signature image is present -->
+      </ion-card-content>
+    </ion-card>
 
-        <br />
-        <strong>Selfie:</strong><br />
+    <ion-card class="detail-card">
+      <ion-card-header>
+        <ion-card-title>Selfie</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
         <ion-thumbnail
           *ngIf="visitor.selfieImage"
           (click)="enlargeImage(visitor.selfieImage)"
         >
-          <img
-            [src]="visitor.selfieImage"
-            alt="Selfie"
-            style="width: 100%; max-width: 200px"
-          />
+          <img [src]="visitor.selfieImage" alt="Selfie" />
         </ion-thumbnail>
         <p *ngIf="!visitor.selfieImage">No selfie available.</p>
-        <!-- Message if no selfie image is present -->
-      </div>
-    </ion-card-content>
-  </ion-card>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
   <!-- Enlarged Image Display Section -->
   <div
@@ -80,33 +110,7 @@
     (click)="closeEnlargedImage()"
   >
     <img [src]="enlargedImage" alt="Enlarged Selfie" />
-    <!-- Display enlarged image -->
     <ion-button expand="full" (click)="closeEnlargedImage()">Close</ion-button>
     <!-- Button to close enlarged image -->
   </div>
-
-  <style>
-    /* Styles for the enlarged image overlay */
-    .enlarged-image {
-      position: fixed; /* Fixed position to cover the entire screen */
-      top: 0; /* Align to the top of the viewport */
-      left: 0; /* Align to the left of the viewport */
-      right: 0; /* Align to the right of the viewport */
-      bottom: 0; /* Align to the bottom of the viewport */
-      background-color: rgba(
-        0,
-        0,
-        0,
-        0.8
-      ); /* Dark semi-transparent background */
-      display: flex; /* Use flexbox for centering */
-      justify-content: center; /* Center the content horizontally */
-      align-items: center; /* Center the content vertically */
-      z-index: 999; /* Ensure it is on top of other elements */
-    }
-    .enlarged-image img {
-      max-width: 90%; /* Maximum width of the enlarged image */
-      max-height: 90%; /* Maximum height of the enlarged image */
-    }
-  </style>
 </ion-content>

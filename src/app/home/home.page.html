@@ -1,5 +1,9 @@
-<!-- Image on the left side of the header -->
-<ion-card class="Top-logo"> </ion-card>
+<ion-header>
+  <div class="d-flex align-items-center p-2">
+    <!-- Image on the left side of the header -->
+    <ion-card class="Top-logo"></ion-card>
+  </div>
+</ion-header>
 
 <ion-content class="d-flex flex-column justify-content-between vh-100">
   <!-- Main container that fills the viewport height -->
@@ -7,12 +11,8 @@
     class="d-flex flex-row align-items-center justify-content-center flex-grow-1"
   >
     <!-- Visitor Button -->
-    <ion-button
-      class="btn btn-lg align-items-center"
-      [href]="['/visitor-page']"
-    >
+    <ion-button class="visitor-button" [href]="['/visitor-page']">
       <span class="vis-text">Visitor</span>
-      <!-- Text label for the Visitor button -->
       <!-- SVG icon representing a user -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
         <path
@@ -23,8 +23,7 @@
   </div>
 
   <!-- Container for links at the bottom of the page -->
-  <div class="info-text">
-    <!-- Link to display the Privacy Policy using a method in the component -->
+  <div class="info-text text-center mb-3">
     <a
       (click)="showPrivacyPolicy()"
       class="bt btn-primary"
@@ -32,7 +31,6 @@
       >Privacy Policy</a
     >
     <br />
-    <!-- Link to display the Terms and Conditions using a method in the component -->
     <a
       (click)="showTermsAndConditions()"
       class="bt btn-primary"
@@ -40,7 +38,8 @@
       >Terms and Conditions</a
     >
     <br />
-    <!-- Link to navigate to the Visitor List page -->
-    <button (click)="authenticateUser()">Visitor List</button>
+    <button (click)="authenticateUser()" class="btn btn-outline-secondary mt-2">
+      Visitor List
+    </button>
   </div>
 </ion-content>

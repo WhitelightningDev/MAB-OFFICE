@@ -1,0 +1,81 @@
+/* Styles for header title */
+.header-title {
+  text-align: center; /* Center the title */
+  font-size: 1.5rem; /* Increase font size */
+  font-weight: bold; /* Bold text */
+}
+
+/* Styles for ion-toolbar */
+ion-toolbar {
+  position: relative;
+  right: 30%;
+  background-image: url("/assets/Backup_logo.png");
+  background-size: 35%; /* Adjust size as needed */
+  background-repeat: no-repeat; /* Prevent repetition */
+  background-position: center; /* Center the image */
+  --background: transparent; /* Make the default background transparent */
+  height: 56px; /* Default height for ion-toolbar, adjust if necessary */
+}
+
+/* Styles for the visitor card */
+.visitor-card {
+  margin-top: 20px; /* Space above card */
+  background-color: #e3f2fd; /* Light blue background */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Enhanced shadow for depth */
+  border-radius: 16px; /* Rounded corners for a softer look */
+}
+
+/* Container for details */
+.details-container {
+  display: grid; /* Use grid layout */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(200px, 1fr)
+  ); /* Responsive columns */
+  gap: 15px; /* Space between cards */
+  margin-top: 20px; /* Space above details */
+}
+
+/* Styles for detail cards */
+.detail-card {
+  background-color: #ffffff; /* White background for detail cards */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Shadow for small cards */
+  border-radius: 12px; /* Rounded corners */
+  padding: 15px; /* Padding inside detail cards */
+}
+
+/* Styles for enlarged image overlay */
+.enlarged-image {
+  position: fixed; /* Fixed position to cover the entire screen */
+  top: 0; /* Align to the top of the viewport */
+  left: 0; /* Align to the left of the viewport */
+  right: 0; /* Align to the right of the viewport */
+  bottom: 0; /* Align to the bottom of the viewport */
+  background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  z-index: 999; /* Ensure it is on top of other elements */
+  padding: 20px; /* Padding around the image */
+}
+
+.enlarged-image img {
+  max-width: 90%; /* Maximum width of the enlarged image */
+  max-height: 90%; /* Maximum height of the enlarged image */
+  border-radius: 10px; /* Rounded corners for the image */
+}
+
+/* Style for ion-thumbnail images */
+ion-thumbnail img {
+  width: 100%; /* Make image responsive */
+  max-width: 200px; /* Limit max width */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Styles for ion-button inside enlarged image */
+.enlarged-image ion-button {
+  margin-top: 20px; /* Space above button */
+  background-color: #007bff; /* Custom background color */
+  color: white; /* White text color */
+  border-radius: 5px; /* Rounded button corners */
+}
