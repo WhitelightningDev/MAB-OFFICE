@@ -79,11 +79,11 @@ ion-title {
   border-radius: 8px;
 }
 
-.signature-container {
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  background-color: #ffffff;
-}
+// .signature-container {
+//   border: 1px solid #dcdcdc;
+//   border-radius: 10px;
+//   background-color: #ffffff;
+// }
 
 /* Select Styles */
 .form-select {
@@ -97,18 +97,46 @@ ion-title {
 }
 
 /* Additional Styles */
+/* Ensures the container spans the full height of the viewport minus the header */
 .container {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: calc(100vh - 100px); /* Adjust height as needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Card styling for the form sections */
+.card {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Ensure form groups are spaced appropriately */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
 }
 
 .text-center {
   text-align: center;
 }
 
-.scrollable-content {
-  margin-top: 10px;
-  overflow-y: auto;
-  max-height: 800px;
-}
+// .scrollable-content {
+//   margin-top: 10px;
+//   overflow-y: auto;
+//   max-height: 800px;
+// }

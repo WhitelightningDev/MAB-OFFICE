@@ -419,7 +419,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     if (!this.canvas) return; // Ensure canvas element exists
     this.ctx = this.canvas.getContext('2d')!;
 
-    this.canvas.width = 400; // Set your desired width
+    this.canvas.width = 340; // Set your desired width
     this.canvas.height = 150; // Set your desired height
     this.ctx.lineWidth = 2; // Set line width
     this.ctx.lineCap = 'round'; // Round line caps
