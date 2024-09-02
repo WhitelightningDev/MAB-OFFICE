@@ -133,6 +133,21 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.email = this.previousVisitorData.email;
       this.organization = this.previousVisitorData.organization;
       // Add any other fields you want to autofill
+
+      // Hide the autofill confirmation modal
+      this.hideAutofillConfirmationModal();
+    }
+  }
+
+  private hideAutofillConfirmationModal() {
+    const modalElement = document.getElementById('autofillConfirmationModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      } else {
+        console.error('Failed to get modal instance');
+      }
     }
   }
 
