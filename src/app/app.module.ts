@@ -14,7 +14,7 @@ import { SavedDetailsComponent } from './saved-details/saved-details.component';
 import { SelfieModalComponent } from './selfie-modal/selfie-modal.component';
 import { VisitorDetailModalComponent } from './visitor-detail-modal/visitor-detail-modal.component';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
-
+import { SplashScreenComponent } from './splash-screen/splash-screen.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +23,7 @@ import { HttpClientModule } from '@angular/common/http'; // Import HttpClientMod
     SavedDetailsComponent,
     SelfieModalComponent,
     VisitorDetailModalComponent,
+    SplashScreenComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,36 @@
+.splash-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  background-color: #ffffff; // Change according to your background color
+}
+
+.splash-image {
+  width: 80%; // Adjust size as needed
+  animation: fadeIn 2s; // Animation effect
+}
+
+.spinner {
+  margin-top: 20px;
+  animation: spin 1s linear infinite; // Spinner animation
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
