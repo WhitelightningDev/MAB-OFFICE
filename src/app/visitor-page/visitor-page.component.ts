@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Observable, Subscription } from 'rxjs';
 import { popiaQuestions } from '../services/popia.questions';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as bootstrap from 'bootstrap';
 
 @Component({
@@ -53,8 +53,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
   // Method called when POPIA acceptance changes
   onPOPIAAccepted(accepted: boolean) {
+    // this.accepted_popia = accepted;
     this.accepted_popia = accepted;
-    // this.acceptedPOPIA = accepted;
     if (accepted) {
       this.enableFormFields();
       this.hideModal();
@@ -231,8 +231,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.purpose.trim() !== '' &&
       (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
       this.organization.trim() !== '' && // Ensure organization is not empty
-      this.accepted_popia
-      // this.acceptedPOPIA // Ensure POPIA is accepted
+      // this.acceptedPOPIA
+      this.accepted_popia // Ensure POPIA is accepted
     );
   }
 
@@ -240,14 +240,14 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   onSubmit() {
     // Check if the user accepted the POPIA terms
     // accepted_popia
-    // if (!this.acceptedPOPIA) {
-    //   this.presentToast('You must accept the POPIA terms to proceed.');
-    //   return;
-    // }
     if (!this.accepted_popia) {
       this.presentToast('You must accept the POPIA terms to proceed.');
       return;
     }
+    // if (!this.accepted_popia) {
+    //   this.presentToast('You must accept the POPIA terms to proceed.');
+    //   return;
+    // }
 
     // Trim contact number to 10 digits
     if (this.contact.length > 10) {
@@ -281,11 +281,11 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       idn: this.idn,
       purpose: reasonForVisit,
       // dateOfEntry: dateOfEntry,
-      date_of_entry: date_of_entry,
+      // date_of_entry: date_of_entry,
       organization: this.organization,
       signature: this.signature, // Make sure signatureImage is captured
       selfie: this.selfie, // Make sure selfieImage is captured
-      acceptedPOPIA: this.accepted_popia,
+      accepted_popia: this.accepted_popia,
     };
 
     // Log selfie and signature images for debugging
@@ -294,7 +294,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
     // http://10.0.0.175:3000/api/visitors
     // http://192.168.5.30:5000/checkin
-
+    // https://hades.mabbureau.com/checkin
     // Make the HTTP POST request to the backend
     this.http
       .post('https://hades.mabbureau.com/checkin', visitorData)

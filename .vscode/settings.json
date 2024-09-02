@@ -3,5 +3,6 @@
     "@ionic/angular/common",
     "@ionic/angular"
   ],
-  "cSpell.words": ["fontawesome", "fortawesome", "homescreen", "POPIA"]
+  "cSpell.words": ["fontawesome", "fortawesome", "homescreen", "POPIA"],
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
