@@ -35,8 +35,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   organization: string = '';
   signature: string | null = null;
   selfie: string | null = null;
-  acceptedPOPIA: boolean = false;
-  // accepted_popia: boolean = false;
+  // acceptedPOPIA: boolean = false;
+  accepted_popia: boolean = false;
 
   // New properties for custom reason
   otherReason: string = ''; // Holds custom reason input
@@ -53,8 +53,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
   // Method called when POPIA acceptance changes
   onPOPIAAccepted(accepted: boolean) {
-    // this.accepted_popia = accepted;
-    this.acceptedPOPIA = accepted;
+    this.accepted_popia = accepted;
+    // this.acceptedPOPIA = accepted;
     if (accepted) {
       this.enableFormFields();
       this.hideModal();
@@ -231,8 +231,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.purpose.trim() !== '' &&
       (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
       this.organization.trim() !== '' && // Ensure organization is not empty
-      // this.accepted_popia
-      this.acceptedPOPIA // Ensure POPIA is accepted
+      this.accepted_popia
+      // this.acceptedPOPIA // Ensure POPIA is accepted
     );
   }
 
@@ -240,14 +240,14 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   onSubmit() {
     // Check if the user accepted the POPIA terms
     // accepted_popia
-    if (!this.acceptedPOPIA) {
-      this.presentToast('You must accept the POPIA terms to proceed.');
-      return;
-    }
-    // if (!this.accepted_popia) {
+    // if (!this.acceptedPOPIA) {
     //   this.presentToast('You must accept the POPIA terms to proceed.');
     //   return;
     // }
+    if (!this.accepted_popia) {
+      this.presentToast('You must accept the POPIA terms to proceed.');
+      return;
+    }
 
     // Trim contact number to 10 digits
     if (this.contact.length > 10) {
@@ -270,8 +270,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     // dateOfEntry
     // date_of_entry
 
-    const dateOfEntry = new Date().toISOString(); // Use ISO format for date
-    // const date_of_entry = new Date().toISOString(); // Use ISO format for date
+    // const dateOfEntry = new Date().toISOString(); // Use ISO format for date
+    const date_of_entry = new Date().toISOString(); // Use ISO format for date
     // Prepare the visitor data object
     const visitorData = {
       name: this.name,
@@ -280,12 +280,12 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       email: this.email,
       idn: this.idn,
       purpose: reasonForVisit,
-      dateOfEntry: dateOfEntry,
-      // date_of_entry: date_of_entry,
+      // dateOfEntry: dateOfEntry,
+      date_of_entry: date_of_entry,
       organization: this.organization,
       signature: this.signature, // Make sure signatureImage is captured
       selfie: this.selfie, // Make sure selfieImage is captured
-      acceptedPOPIA: this.acceptedPOPIA,
+      acceptedPOPIA: this.accepted_popia,
     };
 
     // Log selfie and signature images for debugging
@@ -297,7 +297,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
     // Make the HTTP POST request to the backend
     this.http
-      .post('http://10.0.0.175:3000/api/visitors', visitorData)
+      .post('https://hades.mabbureau.com/checkin', visitorData)
       .subscribe({
         next: (response) => {
           console.log('Visitor data submitted successfully:', response);

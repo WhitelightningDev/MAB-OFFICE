@@ -16,7 +16,7 @@ import { Router } from '@angular/router'; // Import Router for navigation
 // http://192.168.5.30:5000/visitors
 export class SavedDetailsComponent implements OnInit {
   visitors: any[] = []; // Array to hold visitor details fetched from the API
-  private apiUrl = 'http://10.0.0.175:3000/api/visitors'; // API endpoint URL
+  private apiUrl = 'https://hades.mabbureau.com/visitors'; // API endpoint URL
   successToast: any; // Placeholder for a success toast message
 
   constructor(

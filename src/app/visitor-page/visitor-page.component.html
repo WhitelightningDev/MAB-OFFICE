@@ -73,7 +73,7 @@
               placeholder="Enter your name"
               [(ngModel)]="name"
               (ngModelChange)="onNameChange()"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
@@ -92,7 +92,7 @@
               placeholder="Enter your surname"
               [(ngModel)]="surname"
               (ngModelChange)="onSurnameChange()"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
@@ -110,7 +110,7 @@
               class="form-control custom-input"
               placeholder="Enter your contact"
               [(ngModel)]="contact"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
@@ -128,7 +128,7 @@
               class="form-control custom-input"
               placeholder="Enter your email"
               [(ngModel)]="email"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
@@ -144,7 +144,7 @@
               class="form-control custom-input"
               placeholder="Enter your ID Number"
               [(ngModel)]="idn"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
@@ -161,7 +161,7 @@
               class="form-control custom-input"
               [(ngModel)]="purpose"
               (change)="onPurposeChange()"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             >
               <option value="">Select Purpose</option>
               <option value="Scheduled Meeting">Scheduled Meeting</option>
@@ -205,7 +205,7 @@
               class="form-control custom-input"
               placeholder="Enter your organization"
               [(ngModel)]="organization"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
@@ -227,7 +227,7 @@
               accept="image/*"
               capture="environment"
               (change)="handleSelfieChange($event)"
-              [disabled]="!acceptedPOPIA"
+              [disabled]="!accepted_popia"
             />
           </div>
         </div>
