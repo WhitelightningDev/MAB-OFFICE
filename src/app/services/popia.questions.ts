@@ -1,5 +1,3 @@
-import { faBold } from '@fortawesome/free-solid-svg-icons'; // Import a specific icon from FontAwesome
-
 // An array of questions and answers regarding POPIA (Protection of Personal Information Act)
 export const popiaQuestions = [
   {
