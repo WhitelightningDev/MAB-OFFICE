@@ -1,11 +1,57 @@
-.image-container {
+// .image-container {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100%;
+// }
+// img {
+//   max-width: 100%;
+//   max-height: 100%;
+//   object-fit: contain;
+// }
+
+.md3-toolbar {
+  background-color: var(--ion-color-surface); /* Material 3 surface color */
+  color: var(--ion-color-on-surface); /* Material 3 on-surface text color */
+  box-shadow: var(--ion-box-shadow); /* Subtle shadow for elevation */
+  border-bottom: 1px solid var(--ion-color-outline); /* Thin outline for toolbar */
+  border-radius: 12px; /* Rounded corners */
+}
+
+.md3-icon-button {
+  --background: transparent;
+  --color: var(--ion-color-on-surface-variant); /* Softer color for icons */
+  border-radius: 50%; /* Circular button for a more Material 3 look */
+}
+
+.md3-title {
+  font-size: 20px; /* Larger font size for the title */
+  font-weight: 600; /* Medium weight */
+  color: var(--ion-color-on-surface); /* On-surface text color */
+}
+
+.md3-content {
+  padding: 16px; /* Padding around the content */
+  background-color: var(
+    --ion-color-background
+  ); /* Background color of the content */
+}
+
+.md3-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  background-color: var(
+    --ion-color-surface-variant
+  ); /* Lighter surface variant color */
+  border-radius: 16px; /* Rounded corners for the image container */
+  box-shadow: var(--ion-box-shadow); /* Shadow for elevation */
+  padding: 16px; /* Inner padding */
+  overflow: hidden; /* Ensures image fits nicely */
 }
-img {
+
+.md3-image {
   max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  height: auto;
+  border-radius: 12px; /* Rounded corners for the image */
 }

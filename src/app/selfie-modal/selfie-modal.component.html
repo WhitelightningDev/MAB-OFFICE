@@ -1,20 +1,20 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar class="md3-toolbar">
     <ion-buttons slot="start">
       <!-- Button to close the modal -->
-      <ion-button (click)="closeModal()">
-        <ion-icon name="close"></ion-icon>
+      <ion-button (click)="closeModal()" class="md3-icon-button">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
         <!-- Icon for the close button -->
       </ion-button>
     </ion-buttons>
-    <ion-title>Selfie Preview</ion-title>
+    <ion-title class="md3-title">Selfie Preview</ion-title>
     <!-- Title of the modal -->
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="image-container">
-    <img [src]="imageSrc" alt="Selfie" />
+<ion-content class="md3-content">
+  <div class="md3-image-container">
+    <img [src]="imageSrc" alt="Selfie" class="md3-image" />
     <!-- Display the selfie image -->
   </div>
 </ion-content>

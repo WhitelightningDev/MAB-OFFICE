@@ -1,25 +1,32 @@
 <ion-header>
+  <!-- Toolbar with no padding or margin -->
   <ion-toolbar class="ion-no-padding ion-no-margin">
+    <!-- Back button positioned at the start of the toolbar -->
     <ion-buttons (click)="handleBackNavigation()" slot="start">
       <ion-back-button default-href="/visitor-page"></ion-back-button>
     </ion-buttons>
+    <!-- Title displayed in the center of the toolbar -->
     <ion-title class="header-title">Saved Visitor Details</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- List of visitors -->
   <ion-list>
+    <!-- Iterate over the visitors array and display each visitor's details -->
     <ion-item
       *ngFor="let visitor of visitors; let i = index"
       (click)="openVisitorDetails(visitor)"
       detail-push
       class="visitor-item"
     >
+      <!-- Display visitor name, surname, date, and POPIA acceptance status -->
       <ion-label>
         <h2>{{ visitor.name }} {{ visitor.surname }}</h2>
         <h3>{{ visitor.date }}</h3>
         <h4>POPIA Accepted: {{ visitor.acceptedPOPIA }}</h4>
       </ion-label>
+      <!-- Button to delete the visitor -->
       <ion-button
         slot="end"
         class="delete-button"

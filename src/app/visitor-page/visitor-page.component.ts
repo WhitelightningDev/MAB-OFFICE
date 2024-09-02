@@ -35,7 +35,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   organization: string = '';
   signature: string | null = null;
   selfie: string | null = null;
-  accepted_popia: boolean = false;
+  acceptedPOPIA: boolean = false;
+  // accepted_popia: boolean = false;
 
   // New properties for custom reason
   otherReason: string = ''; // Holds custom reason input
@@ -52,7 +53,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
 
   // Method called when POPIA acceptance changes
   onPOPIAAccepted(accepted: boolean) {
-    this.accepted_popia = accepted;
+    // this.accepted_popia = accepted;
+    this.acceptedPOPIA = accepted;
     if (accepted) {
       this.enableFormFields();
       this.hideModal();
@@ -214,17 +216,23 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       this.purpose.trim() !== '' &&
       (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
       this.organization.trim() !== '' && // Ensure organization is not empty
-      this.accepted_popia // Ensure POPIA is accepted
+      // this.accepted_popia
+      this.acceptedPOPIA // Ensure POPIA is accepted
     );
   }
 
   // Handle form submission
   onSubmit() {
     // Check if the user accepted the POPIA terms
-    if (!this.accepted_popia) {
+    // accepted_popia
+    if (!this.acceptedPOPIA) {
       this.presentToast('You must accept the POPIA terms to proceed.');
       return;
     }
+    // if (!this.accepted_popia) {
+    //   this.presentToast('You must accept the POPIA terms to proceed.');
+    //   return;
+    // }
 
     // Trim contact number to 10 digits
     if (this.contact.length > 10) {
@@ -244,8 +252,11 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     // Determine the reason for the visit
     const reasonForVisit =
       this.purpose === 'Other' ? this.otherReason : this.purpose;
-    const date_of_entry = new Date().toISOString(); // Use ISO format for date
+    // dateOfEntry
+    // date_of_entry
 
+    const dateOfEntry = new Date().toISOString(); // Use ISO format for date
+    // const date_of_entry = new Date().toISOString(); // Use ISO format for date
     // Prepare the visitor data object
     const visitorData = {
       name: this.name,
@@ -254,33 +265,39 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
       email: this.email,
       idn: this.idn,
       purpose: reasonForVisit,
-      date_of_entry: date_of_entry,
+      dateOfEntry: dateOfEntry,
+      // date_of_entry: date_of_entry,
       organization: this.organization,
       signature: this.signature, // Make sure signatureImage is captured
       selfie: this.selfie, // Make sure selfieImage is captured
-      accepted_popia: this.accepted_popia,
+      acceptedPOPIA: this.acceptedPOPIA,
     };
 
     // Log selfie and signature images for debugging
     console.log('Selfie Image:', this.selfie);
     console.log('Signature Image:', this.signature);
 
+    // http://10.0.0.175:3000/api/visitors
+    // http://192.168.5.30:5000/checkin
+
     // Make the HTTP POST request to the backend
-    this.http.post('http://192.168.5.30:5000/checkin', visitorData).subscribe({
-      next: (response) => {
-        console.log('Visitor data submitted successfully:', response);
-        this.showSuccessModal();
-        setTimeout(() => {
-          this.router.navigate(['/home']); // Navigate after a delay
-        }, 2000); // Adjust the delay as needed
-      },
-      error: (err) => {
-        console.error('Error submitting visitor data:', err);
-        this.presentToast(
-          'An error occurred while submitting data. Please try again.'
-        );
-      },
-    });
+    this.http
+      .post('http://10.0.0.175:3000/api/visitors', visitorData)
+      .subscribe({
+        next: (response) => {
+          console.log('Visitor data submitted successfully:', response);
+          this.showSuccessModal();
+          setTimeout(() => {
+            this.router.navigate(['/home']); // Navigate after a delay
+          }, 2000); // Adjust the delay as needed
+        },
+        error: (err) => {
+          console.error('Error submitting visitor data:', err);
+          this.presentToast(
+            'An error occurred while submitting data. Please try again.'
+          );
+        },
+      });
   }
 
   // Validation for the form fields

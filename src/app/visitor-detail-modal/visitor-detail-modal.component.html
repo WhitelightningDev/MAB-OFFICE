@@ -56,7 +56,9 @@
       <ion-card-header>
         <ion-card-title>Date of Entry</ion-card-title>
       </ion-card-header>
-      <ion-card-content>{{ visitor.date_of_entry }}</ion-card-content>
+      <!-- dateOfEntry -->
+      <!--date_of_entry  -->
+      <ion-card-content>{{ visitor.dateOfEntry }}</ion-card-content>
     </ion-card>
 
     <ion-card class="detail-card">
@@ -70,8 +72,9 @@
       <ion-card-header>
         <ion-card-title>POPIA Accepted</ion-card-title>
       </ion-card-header>
+      <!--  // accepted_popia -->
       <ion-card-content>{{
-        visitor.accepted_popia ? "Yes" : "No"
+        visitor.acceptedPOPIA ? "Yes" : "No"
       }}</ion-card-content>
     </ion-card>
 
