@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastService } from '../Toast.Service'; // Service for displaying toast messages
+import { ToastService } from '../services/Toast.Service'; // Service for displaying toast messages
 import { AlertController } from '@ionic/angular';
-import { PrivacyPolicy } from './privacy-policy'; // Import the privacy policy module
-import { termsAndConditions } from './TsnCs'; // Import the terms and conditions module
+import { PrivacyPolicy } from '../services/privacy-policy'; // Import the privacy policy module
+import { termsAndConditions } from '../services/TsnCs'; // Import the terms and conditions module
 
 @Component({
   selector: 'app-home',

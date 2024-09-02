@@ -2,6 +2,7 @@
   <div class="d-flex align-items-center p-2">
     <!-- Image on the left side of the header -->
     <ion-card class="Top-logo"></ion-card>
+    <!-- Placeholder for a logo or image -->
   </div>
 </ion-header>
 
@@ -13,17 +14,20 @@
     <!-- Visitor Button -->
     <ion-button class="visitor-button" [href]="['/visitor-page']">
       <span class="vis-text">Visitor</span>
+      <!-- Text on the Visitor button -->
       <!-- SVG icon representing a user -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
         <path
           d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"
         />
       </svg>
+      <!-- User icon in SVG format -->
     </ion-button>
   </div>
 
   <!-- Container for links at the bottom of the page -->
   <div class="info-text text-center mb-3">
+    <!-- Link to show the Privacy Policy -->
     <a
       (click)="showPrivacyPolicy()"
       class="bt btn-primary"
@@ -31,6 +35,7 @@
       >Privacy Policy</a
     >
     <br />
+    <!-- Link to show the Terms and Conditions -->
     <a
       (click)="showTermsAndConditions()"
       class="bt btn-primary"
@@ -38,6 +43,7 @@
       >Terms and Conditions</a
     >
     <br />
+    <!-- Button to authenticate the user and show the Visitor List -->
     <button (click)="authenticateUser()" class="btn btn-outline-secondary mt-2">
       Visitor List
     </button>

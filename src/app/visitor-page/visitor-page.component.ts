@@ -8,7 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { Observable, Subscription } from 'rxjs';
-import { popiaQuestions } from './popia.questions';
+import { popiaQuestions } from '../services/popia.questions';
 import { HttpClient } from '@angular/common/http';
 import * as bootstrap from 'bootstrap';
 
