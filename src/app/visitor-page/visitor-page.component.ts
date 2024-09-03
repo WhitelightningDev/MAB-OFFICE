@@ -302,7 +302,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     const toast = await this.toastController.create({
       message: message,
       duration: 3000,
-      position: 'bottom',
+      position: 'top',
       cssClass: 'success-toast',
       icon: isSuccess ? 'checkmark-circle' : '', // Use a success icon for successful messages
     });
@@ -417,7 +417,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  onSuccessModalShown() {
+  presentSuccessToast() {
     // Automatically redirect to the saved details page after 3 seconds
     setTimeout(() => {
       this.redirectToSavedDetails();

@@ -9,6 +9,7 @@
 </ion-header>
 
 <!-- POPIA Modal -->
+<!-- POPIA Modal -->
 <div
   class="modal fade"
   id="popiaModal"
@@ -19,7 +20,10 @@
   <div class="modal-dialog modal-lg scrollable-content">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="popiaModalLabel">POPIA Act Acceptance</h5>
+        <h5 class="modal-title" id="popiaModalLabel">
+          <i class="fas fa-shield-alt" style="color: #609bd4"></i>
+          POPIA Act Acceptance
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -29,7 +33,7 @@
       </div>
       <div class="modal-body scrollable-content">
         <p>Please review and accept the POPIA before proceeding:</p>
-        <div *ngFor="let question of questions">
+        <div *ngFor="let question of questions" class="question-container">
           <strong>{{ question.title }}</strong>
           <p [innerHTML]="question.question"></p>
         </div>
@@ -266,7 +270,7 @@
   tabindex="-1"
   aria-labelledby="successModalLabel"
   aria-hidden="true"
-  (shown.bs.modal)="onSuccessModalShown()"
+  (shown.bs.modal)="presentSuccessToast()"
 >
   <div class="modal-dialog modal-sm">
     <div class="modal-content text-center">

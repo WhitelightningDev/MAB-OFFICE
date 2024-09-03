@@ -22,20 +22,41 @@ ion-title {
 /* Modal Styles */
 .modal-content {
   border-radius: 16px; /* Rounded corners */
+  max-width: 90vw; /* Ensures modal does not overflow */
+  width: 100%; /* Full width within max */
 }
 
 .modal-header {
   border-bottom: none;
   background-color: #ffffff;
+  padding: 16px 24px; /* Increased padding */
+}
+
+.modal-title {
+  font-size: 1.5rem; /* Larger title font */
+  display: flex;
+  align-items: center;
+  color: #333; /* Darker title color */
 }
 
 .modal-body {
   padding: 24px;
   color: #333;
+  max-height: 60vh; /* Limits height for scroll */
+  overflow-y: auto; /* Allows scrolling */
+}
+
+.question-container {
+  margin-bottom: 1.5rem; /* Spacing between questions */
+  padding: 12px; /* Padding for question blocks */
+  border: 1px solid #dcdcdc; /* Border for question blocks */
+  border-radius: 8px; /* Rounded corners for question blocks */
+  background-color: #f9f9f9; /* Light background */
 }
 
 .modal-footer {
   border-top: none;
+  padding: 16px 24px; /* Increased padding */
 }
 
 .btn-close {
@@ -45,6 +66,7 @@ ion-title {
 .btn-secondary,
 .btn-primary {
   border-radius: 8px; /* Rounded corners */
+  font-weight: bold; /* Bold text for buttons */
 }
 
 .btn-secondary {
@@ -55,6 +77,17 @@ ion-title {
 .btn-primary {
   background-color: #609bd4;
   color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #5086c5; /* Darker shade on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 90%; /* Keeps the modal width reasonable on small devices */
+  }
 }
 
 /* Input and Form Styles */
@@ -125,6 +158,11 @@ ion-title {
 @media (max-width: 768px) {
   .row {
     flex-direction: column;
+  }
+
+  /* Ensure modal content adjusts to smaller screens */
+  .modal-content {
+    max-width: 90%; /* Keeps the modal width reasonable on small devices */
   }
 }
 
