@@ -6,7 +6,11 @@ const config: CapacitorConfig = {
   webDir: 'www', // Directory for web assets
   server: {
     cleartext: true, // Allow cleartext traffic (HTTP)
-    allowNavigation: ['http://10.0.0.175:3000', 'http://192.168.5.30:5000'], // Allowed HTTP URLs
+    allowNavigation: [
+      'http://10.0.0.175:3000',
+      'http://192.168.5.30:5000',
+      'https://hades.mabbureau.com',
+    ], // Allowed HTTP URLs
   },
   plugins: {
     SplashScreen: {
