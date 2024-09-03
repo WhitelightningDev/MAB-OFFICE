@@ -12,6 +12,7 @@ const config: CapacitorConfig = {
       'https://hades.mabbureau.com',
     ], // Allowed HTTP URLs
   },
+
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000, // Duration in milliseconds
