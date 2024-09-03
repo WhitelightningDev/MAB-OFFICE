@@ -132,24 +132,6 @@ ion-title {
   text-align: center;
 }
 
-/* Success Toast Styles */
-/* From Uiverse.io by akshat-patel28 */
-.card.toast {
-  width: 330px;
-  height: 80px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  padding: 10px 15px;
-  background-color: #ffffff;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 15px;
-}
-
 .wave {
   position: absolute;
   transform: rotate(90deg);

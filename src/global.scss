@@ -27,6 +27,22 @@
   margin-top: 0; /* Remove top margin from all cards */
 }
 
+/* In global.scss or a specific component's .scss file */
+.success-toast {
+  --background: #4caf50; /* Green background for success */
+  --color: #fff;
+}
+
+.error-toast {
+  --background: #f44336; /* Red background for error */
+  --color: #fff;
+}
+
+.info-toast {
+  --background: #f34b21; /* Blue background for info */
+  --color: #fff;
+}
+
 body {
   background: url("./assets/BACKDROP.png");
   background-size: cover;

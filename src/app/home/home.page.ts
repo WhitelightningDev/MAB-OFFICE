@@ -30,7 +30,7 @@ export class HomePage implements OnInit {
 
   // Method to show a toast notification with a given message
   showToast(message: string) {
-    this.toastService.presentToast(message);
+    this.toastService.presentErrorToast(message);
   }
 
   // Method to display the privacy policy in an alert dialog
