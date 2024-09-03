@@ -72,7 +72,6 @@
               class="form-control custom-input"
               placeholder="Enter your name"
               [(ngModel)]="name"
-              (ngModelChange)="onNameChange()"
               [disabled]="!accepted_popia"
             />
           </div>
@@ -91,7 +90,6 @@
               class="form-control custom-input"
               placeholder="Enter your surname"
               [(ngModel)]="surname"
-              (ngModelChange)="onSurnameChange()"
               [disabled]="!accepted_popia"
             />
           </div>
@@ -304,7 +302,7 @@
 </div>
 
 <!-- Autofill Confirmation Modal -->
-<div
+<!-- <div
   class="modal fade"
   id="autofillConfirmationModal"
   tabindex="-1"
@@ -339,5 +337,4 @@
         </button>
       </div>
     </div>
-  </div>
-</div>
+  </div> -->

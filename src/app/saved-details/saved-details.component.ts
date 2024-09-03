@@ -11,10 +11,6 @@ import { Router } from '@angular/router'; // Import Router for navigation
   styleUrls: ['./saved-details.component.scss'],
   providers: [DatePipe], // Add DatePipe to the providers for dependency injection
 })
-
-// http://10.0.0.175:3000/api/visitors
-// http://192.168.5.30:5000/visitors
-// https://hades.mabbureau.com/visitors
 export class SavedDetailsComponent implements OnInit {
   visitors: any[] = []; // Array to hold visitor details fetched from the API
   private apiUrl = 'https://hades.mabbureau.com/visitors'; // API endpoint URL
@@ -46,19 +42,35 @@ export class SavedDetailsComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching visitor data:', error);
-        // Log the error details and show an alert if the data fetch fails
-        if (error.status) {
-          console.error(`Error Status: ${error.status}`);
-        }
-        if (error.message) {
-          console.error(`Error Message: ${error.message}`);
-        }
-        this.showAlert(
-          'Error',
-          'Could not load visitor data. Please try again later.'
-        );
+        this.logApiError('Fetch Visitor Data', error); // Log API error details
+        this.handleFetchError(error); // Handle errors from the fetch
       }
     );
+  }
+
+  // Handle different types of fetch errors
+  private handleFetchError(error: any) {
+    let message = 'Could not load visitor data. Please try again later.';
+    if (error.status) {
+      switch (error.status) {
+        case 404:
+          message = 'Visitor data not found. Please check the API URL.';
+          break;
+        case 500:
+          message = 'Server error. Please try again later.';
+          break;
+        case 0:
+          message = 'Network error. Please check your internet connection.';
+          break;
+        default:
+          message = `Unexpected error occurred: ${
+            error.message || error.statusText
+          }`;
+          break;
+      }
+      console.error(`Error Status: ${error.status}, Message: ${message}`);
+    }
+    this.showAlert('Error', message); // Show an alert with the error message
   }
 
   // Open the modal to display detailed information about a visitor
@@ -70,49 +82,14 @@ export class SavedDetailsComponent implements OnInit {
     await modal.present(); // Present the modal to the user
   }
 
-  // Prompt the user to confirm before deleting a visitor
-  async deleteVisitor(index: number, event: Event) {
-    event.stopPropagation(); // Prevent the event from bubbling up
-    const alert = await this.alertController.create({
-      header: 'Confirm Delete',
-      message: 'Are you sure you want to delete this visitor?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary', // Styling class for the cancel button
-        },
-        {
-          text: 'Delete',
-          handler: () => {
-            const visitorToDelete = this.visitors[index]; // Get the visitor to delete
-            this.deleteVisitorFromApi(visitorToDelete._id); // Call the delete function
-          },
-        },
-      ],
-    });
-
-    await alert.present(); // Present the alert to the user
-  }
-
-  // Delete a visitor from the API and update the list
-  private deleteVisitorFromApi(visitorId: string) {
-    this.http.delete(`${this.apiUrl}/${visitorId}`).subscribe(
-      () => {
-        console.log('Visitor deleted successfully');
-        // Remove the deleted visitor from the local array
-        this.visitors = this.visitors.filter(
-          (visitor) => visitor._id !== visitorId
-        );
-        this.showAlert('Success', 'Visitor deleted successfully.');
-      },
-      (error) => {
-        console.error('Error deleting visitor:', error);
-        this.showAlert(
-          'Error',
-          'Could not delete visitor. Please try again later.'
-        );
-      }
+  // Log API error details to the console for debugging
+  private logApiError(action: string, error: any) {
+    const timestamp = new Date().toISOString();
+    console.error(
+      `[${timestamp}] API Error during ${action}:`,
+      `Status: ${error.status || 'N/A'},`,
+      `Message: ${error.message || 'N/A'},`,
+      `Response: ${JSON.stringify(error.error || {})}`
     );
   }
 
