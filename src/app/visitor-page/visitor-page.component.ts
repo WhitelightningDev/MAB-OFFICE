@@ -4,6 +4,7 @@ import {
   OnDestroy,
   Renderer2,
   ChangeDetectorRef,
+  OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
@@ -24,7 +25,7 @@ import {
   templateUrl: './visitor-page.component.html',
   styleUrls: ['./visitor-page.component.scss'],
 })
-export class VisitorPageComponent implements AfterViewInit, OnDestroy {
+export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   private navigationSubscription: Subscription | undefined;
   questions = popiaQuestions;
   private isDrawing = false;
@@ -49,6 +50,22 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   otherReason: string = ''; // Holds custom reason input
   isOtherReasonVisible: boolean = false; // Tracks visibility of other reason input
   previousVisitorData: any | null = null; // New property to store previous visitor data
+  // ML Model and properties (WASM & Model provided by Google, you can place your own).
+  faceLandmarker!: FaceLandmarker;
+  wasmUrl: string =
+    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm';
+  modelAssetPath: string =
+    'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+  // Native elements we need to interact to later.
+  video!: HTMLVideoElement;
+  canvasElement!: HTMLCanvasElement;
+  canvasCtx!: CanvasRenderingContext2D;
+  // A state to toggle functionality.
+  showingPreview: boolean = false;
+  // A challenge state for the user.
+  userDidBlink: boolean = false;
+  tracking: any;
+  lastVideoTime: number = -1; // Added here to track the last video tim
 
   constructor(
     private renderer: Renderer2,
@@ -68,6 +85,17 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  async ngOnInit(): Promise<void> {
+    this.faceLandmarker = await FaceLandmarker.createFromOptions(
+      await FilesetResolver.forVisionTasks(this.wasmUrl),
+      {
+        baseOptions: { modelAssetPath: this.modelAssetPath, delegate: 'GPU' },
+        outputFaceBlendshapes: true, // We will draw the face mesh in canvas.
+        runningMode: 'VIDEO',
+      }
+    ); // When FaceLandmarker is ready, you'll see in the console: Graph successfully started running.
+  }
+
   // Handles selfie input change
   handleSelfieChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -85,51 +113,126 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
         const img = new Image();
         img.src = loadEvent.target?.result as string;
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-
-          if (ctx) {
-            const maxWidth = 800;
-            const maxHeight = 800;
-            let width = img.width;
-            let height = img.height;
-
-            // Maintain aspect ratio
-            if (width > height) {
-              if (width > maxWidth) {
-                height *= maxWidth / width;
-                width = maxWidth;
-              }
-            } else {
-              if (height > maxHeight) {
-                width *= maxHeight / height;
-                height = maxHeight;
-              }
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // Convert canvas to base64
-            this.selfie = canvas.toDataURL('image/jpeg'); // Save selfie image
-
-            // Debugging line to log the selfie image data length
-            console.log('Selfie image data length:', this.selfie.length);
-
-            // Optionally, you can also log a small part of the image data for verification
-            console.log(
-              'Selfie image data preview:',
-              this.selfie.substring(0, 30)
-            );
-          } else {
-            console.error('Failed to get canvas context');
-            this.presentToast('Unable to process the image. Please try again.');
-          }
+          this.processSelfie(img);
         };
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  // Process the selfie with the faceLandmarker
+  async processSelfie(img: HTMLImageElement) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (ctx) {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      // Check for face landmarks in the selfie
+      const results = await this.faceLandmarker.detectForVideo(
+        canvas,
+        Date.now()
+      );
+
+      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+        // Draw the landmarks on the canvas if a face is detected
+        const drawingUtils = new DrawingUtils(ctx);
+        for (const landmarks of results.faceLandmarks) {
+          [
+            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          ].forEach((type, i) =>
+            drawingUtils.drawConnectors(landmarks, type, {
+              color: '#C0C0C070',
+              lineWidth: i === 0 ? 1 : 4,
+            })
+          );
+        }
+
+        // Convert canvas to base64
+        this.selfie = canvas.toDataURL('image/jpeg'); // Save selfie image
+        console.log('Selfie captured and processed successfully');
+      } else {
+        console.warn('No face detected in the selfie.');
+        this.presentToast('No face detected in the selfie. Please try again.');
+      }
+    } else {
+      console.error('Failed to get canvas context');
+      this.presentToast('Unable to process the image. Please try again.');
+    }
+  }
+
+  // Start tracking with webcam
+  startTracking() {
+    if (
+      !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
+      !this.faceLandmarker
+    ) {
+      console.warn('User media or ML model is not available');
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      this.video.srcObject = stream;
+      this.video.addEventListener('loadeddata', this.predictWebcam);
+      this.tracking = true; // Set tracking to true
+      this.predictWebcam(); // Start predicting as soon as the video is ready
+    });
+  }
+
+  predictWebcam = async () => {
+    // Resize the canvas to match the video size.
+    this.canvasElement.width = this.video.videoWidth;
+    this.canvasElement.height = this.video.videoHeight;
+
+    // Send the video frame to the model.
+    if (this.video.currentTime !== this.lastVideoTime) {
+      this.lastVideoTime = this.video.currentTime;
+      const results = await this.faceLandmarker.detectForVideo(
+        this.video,
+        Date.now()
+      );
+
+      // Draw the results on the canvas
+      if (results.faceLandmarks) {
+        const drawingUtils = new DrawingUtils(this.canvasCtx!);
+        for (const landmarks of results.faceLandmarks) {
+          [
+            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          ].forEach((type, i) =>
+            drawingUtils.drawConnectors(landmarks, type, {
+              color: '#C0C0C070',
+              lineWidth: i === 0 ? 1 : 4,
+            })
+          );
+        }
+      }
+    }
+
+    // Request the next animation frame
+    if (this.tracking) {
+      window.requestAnimationFrame(this.predictWebcam);
+    }
+  };
+
+  // Stop and clear the video & canvas
+  stopTracking() {
+    this.tracking = false;
+    (this.video.srcObject as MediaStream)
+      .getTracks()
+      .forEach((track) => track.stop());
+    this.video.srcObject = null;
+    this.canvasCtx.clearRect(
+      0,
+      0,
+      this.canvasElement.width,
+      this.canvasElement.height
+    );
   }
 
   // This method gets called when the purpose of the visit changes
@@ -249,6 +352,13 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.showModal();
     this.setupCanvas();
+    this.video = document.getElementById('user-video') as HTMLVideoElement;
+    this.canvasElement = document.getElementById(
+      'user-canvas'
+    ) as HTMLCanvasElement;
+    this.canvasCtx = this.canvasElement.getContext(
+      '2d'
+    ) as CanvasRenderingContext2D;
 
     const acceptButton = document.getElementById('acceptPOPIA');
     const cancelButton = document.querySelector('.btn-secondary');

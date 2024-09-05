@@ -233,6 +233,20 @@
           </div>
         </div>
 
+        <!-- Video element for capturing selfie -->
+        <video id="user-video" autoplay style="display: none"></video>
+        <!-- Canvas for displaying captured selfie -->
+        <canvas
+          id="user-canvas"
+          width="300"
+          height="300"
+          style="
+            border: 1px solid #5a5a5a;
+            background-color: azure;
+            display: none;
+          "
+        ></canvas>
+
         <div class="form-group mb-2">
           <label for="signature">Signature:</label>
           <div class="signature-container mb-2">
