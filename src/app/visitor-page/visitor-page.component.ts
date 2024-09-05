@@ -43,7 +43,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   organization: string = '';
   signature: string | null = null;
   selfie: string | null = null;
-  // acceptedPOPIA: boolean = false;
   accepted_popia: boolean = false;
 
   // New properties for custom reason
@@ -56,7 +55,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm';
   modelAssetPath: string =
     'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
-  // Native elements we need to interact to later.
+  // Facial recognition declarations
   video!: HTMLVideoElement;
   canvasElement!: HTMLCanvasElement;
   canvasCtx!: CanvasRenderingContext2D;
@@ -108,12 +107,15 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         return;
       }
 
+      // Start camera tracking
+      this.startTracking();
+
       const reader = new FileReader();
       reader.onloadend = (loadEvent) => {
         const img = new Image();
         img.src = loadEvent.target?.result as string;
         img.onload = () => {
-          this.processSelfie(img);
+          this.processSelfie(img); // Process the selfie image
         };
       };
       reader.readAsDataURL(file);
@@ -137,7 +139,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       );
 
       if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-        // Draw the landmarks on the canvas if a face is detected
         const drawingUtils = new DrawingUtils(ctx);
         for (const landmarks of results.faceLandmarks) {
           [
@@ -165,7 +166,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  // Start tracking with webcam
+  // Start camera and automatically track for face detection
   startTracking() {
     if (
       !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
@@ -175,57 +176,83 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      this.video.srcObject = stream;
-      this.video.addEventListener('loadeddata', this.predictWebcam);
-      this.tracking = true; // Set tracking to true
-      this.predictWebcam(); // Start predicting as soon as the video is ready
-    });
+    // Access device camera
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: 'user' } }) // 'user' for front camera
+      .then((stream) => {
+        this.video.srcObject = stream;
+        this.video.play(); // Start playing the video
+        this.video.addEventListener('loadeddata', () => {
+          this.detectFaceAndCaptureImage(); // Start detecting face
+        });
+        this.tracking = true; // Set tracking to true
+      })
+      .catch((err) => {
+        console.error('Error accessing the camera:', err);
+        this.presentToast('Error accessing the camera. Please try again.');
+      });
   }
 
-  predictWebcam = async () => {
-    // Resize the canvas to match the video size.
+  // Detect face and automatically capture image
+  detectFaceAndCaptureImage = async () => {
+    if (!this.tracking) return;
+
     this.canvasElement.width = this.video.videoWidth;
     this.canvasElement.height = this.video.videoHeight;
 
-    // Send the video frame to the model.
-    if (this.video.currentTime !== this.lastVideoTime) {
-      this.lastVideoTime = this.video.currentTime;
+    try {
       const results = await this.faceLandmarker.detectForVideo(
         this.video,
         Date.now()
       );
 
-      // Draw the results on the canvas
-      if (results.faceLandmarks) {
-        const drawingUtils = new DrawingUtils(this.canvasCtx!);
-        for (const landmarks of results.faceLandmarks) {
-          [
-            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-          ].forEach((type, i) =>
-            drawingUtils.drawConnectors(landmarks, type, {
-              color: '#C0C0C070',
-              lineWidth: i === 0 ? 1 : 4,
-            })
-          );
-        }
+      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+        console.log('Face detected. Capturing image...');
+        this.captureImageFromCamera();
+      } else {
+        console.warn('No face detected.');
       }
+    } catch (error) {
+      console.error('Face detection error:', error);
+      this.presentToast('Face detection failed. Please try again.');
     }
 
-    // Request the next animation frame
     if (this.tracking) {
-      window.requestAnimationFrame(this.predictWebcam);
+      window.requestAnimationFrame(this.detectFaceAndCaptureImage);
     }
   };
 
-  // Stop and clear the video & canvas
+  // Capture image from the camera
+  captureImageFromCamera() {
+    // Draw the current video frame onto the canvas
+    this.canvasCtx.drawImage(
+      this.video,
+      0,
+      0,
+      this.canvasElement.width,
+      this.canvasElement.height
+    );
+
+    // Convert canvas to base64 (captured image)
+    const capturedImage = this.canvasElement.toDataURL('image/jpeg');
+    this.selfie = capturedImage; // Store the captured image
+
+    console.log('Picture captured successfully');
+    this.presentToast('Picture captured successfully.');
+
+    this.stopTracking(); // Stop tracking after capturing the image
+  }
+
+  // Stop camera and clear video & canvas
   stopTracking() {
     this.tracking = false;
-    (this.video.srcObject as MediaStream)
-      .getTracks()
-      .forEach((track) => track.stop());
+
+    if (this.video.srcObject) {
+      (this.video.srcObject as MediaStream)
+        .getTracks()
+        .forEach((track) => track.stop());
+    }
+
     this.video.srcObject = null;
     this.canvasCtx.clearRect(
       0,
@@ -233,6 +260,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       this.canvasElement.width,
       this.canvasElement.height
     );
+    console.log('Tracking stopped.');
   }
 
   // This method gets called when the purpose of the visit changes
@@ -259,16 +287,10 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   // Handle form submission
   onSubmit() {
     // Check if the user accepted the POPIA terms
-    // accepted_popia
     if (!this.accepted_popia) {
       this.presentToast('You must accept the POPIA terms to proceed.');
       return;
     }
-    // if (!this.accepted_popia) {
-    //   this.presentToast('You must accept the POPIA terms to proceed.');
-    //   return;
-    // }
-
     // Trim contact number to 10 digits
     if (this.contact.length > 10) {
       this.contact = this.contact.substring(0, 10);
@@ -287,10 +309,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     // Determine the reason for the visit
     const reasonForVisit =
       this.purpose === 'Other' ? this.otherReason : this.purpose;
-    // dateOfEntry
-    // date_of_entry
 
-    // const dateOfEntry = new Date().toISOString(); // Use ISO format for date
     const date_of_entry = new Date().toISOString(); // Use ISO format for date
     // Prepare the visitor data object
     const visitorData = {
@@ -300,8 +319,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       email: this.email,
       idn: this.idn,
       purpose: reasonForVisit,
-      // dateOfEntry: dateOfEntry,
-      // date_of_entry: date_of_entry,
       organization: this.organization,
       signature: this.signature, // Make sure signatureImage is captured
       selfie: this.selfie, // Make sure selfieImage is captured
@@ -419,7 +436,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       message: message,
       duration: 3000,
       position: 'top',
-      cssClass: 'success-toast',
+      cssClass: 'error-toast',
       icon: isSuccess ? 'checkmark-circle' : '', // Use a success icon for successful messages
     });
     await toast.present();
