@@ -3,6 +3,15 @@
     "@ionic/angular/common",
     "@ionic/angular"
   ],
-  "cSpell.words": ["fontawesome", "fortawesome", "homescreen", "POPIA"],
+  "cSpell.words": [
+    "Blendshapes",
+    "Fileset",
+    "fontawesome",
+    "fortawesome",
+    "homescreen",
+    "Landmarker",
+    "mediapipe",
+    "POPIA"
+  ],
   "java.configuration.updateBuildConfiguration": "automatic"
 }
