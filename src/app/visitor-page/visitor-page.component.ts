@@ -12,6 +12,12 @@ import { popiaQuestions } from '../services/popia.questions';
 import { ToastService } from '../services/Toast.Service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as bootstrap from 'bootstrap';
+import {
+  Category,
+  DrawingUtils,
+  FaceLandmarker,
+  FilesetResolver,
+} from '@mediapipe/tasks-vision';
 
 @Component({
   selector: 'app-visitor-page',
