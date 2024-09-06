@@ -69,7 +69,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   constructor(
     private renderer: Renderer2,
     private router: Router,
-    private toastController: ToastController,
+    private ToastService: ToastService,
     private cdRef: ChangeDetectorRef,
     private http: HttpClient // Inject HttpClient
   ) {}
@@ -99,15 +99,19 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   handleSelfieChange(event: Event) {
     // Start camera tracking
     this.startTracking();
+
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
 
       // Validate if the file is an image
       if (!file.type.startsWith('image/')) {
-        this.presentToast('Please upload a valid image file.');
+        this.ToastService.presentErrorToast(
+          'Invalid file type. Please upload a valid image file.'
+        );
         return;
       }
+
       const reader = new FileReader();
       reader.onloadend = (loadEvent) => {
         const img = new Image();
@@ -117,6 +121,10 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         };
       };
       reader.readAsDataURL(file);
+    } else {
+      this.ToastService.presentInfoToast(
+        'No file selected. Please choose an image.'
+      );
     }
   }
 
@@ -131,64 +139,85 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       ctx.drawImage(img, 0, 0);
 
       // Check for face landmarks in the selfie
-      const results = await this.faceLandmarker.detectForVideo(
-        canvas,
-        Date.now()
-      );
+      try {
+        const results = await this.faceLandmarker.detectForVideo(
+          canvas,
+          Date.now()
+        );
 
-      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-        const drawingUtils = new DrawingUtils(ctx);
-        for (const landmarks of results.faceLandmarks) {
-          [
-            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-          ].forEach((type, i) =>
-            drawingUtils.drawConnectors(landmarks, type, {
-              color: '#C0C0C070',
-              lineWidth: i === 0 ? 1 : 4,
-            })
+        if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+          const drawingUtils = new DrawingUtils(ctx);
+          for (const landmarks of results.faceLandmarks) {
+            [
+              FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+              FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+              FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+            ].forEach((type, i) =>
+              drawingUtils.drawConnectors(landmarks, type, {
+                color: '#C0C0C070',
+                lineWidth: i === 0 ? 1 : 4,
+              })
+            );
+          }
+
+          // Convert canvas to base64
+          this.selfie = canvas.toDataURL('image/jpeg'); // Save selfie image
+          console.log('Selfie captured and processed successfully');
+          this.ToastService.presentSuccessToast(
+            'Selfie captured and processed successfully.'
+          );
+        } else {
+          console.warn('No face detected in the selfie.');
+          this.ToastService.presentErrorToast(
+            'No face detected in the selfie. Please try again.'
           );
         }
-
-        // Convert canvas to base64
-        this.selfie = canvas.toDataURL('image/jpeg'); // Save selfie image
-        console.log('Selfie captured and processed successfully');
-      } else {
-        console.warn('No face detected in the selfie.');
-        this.presentToast('No face detected in the selfie. Please try again.');
+      } catch (error) {
+        console.error('Error processing selfie:', error);
+        this.ToastService.presentErrorToast(
+          'Error processing selfie. Please try again.'
+        );
       }
     } else {
       console.error('Failed to get canvas context');
-      this.presentToast('Unable to process the image. Please try again.');
+      this.ToastService.presentErrorToast(
+        'Unable to process the image. Please try again.'
+      );
     }
   }
 
   // Start camera and automatically track for face detection
-  startTracking() {
-    if (
-      !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
-      !this.faceLandmarker
-    ) {
-      console.warn('User media or ML model is not available');
+  async startTracking() {
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      console.warn('User media is not available');
+      this.ToastService.presentErrorToast(
+        'Camera not available. Please check your device settings.'
+      );
       return;
     }
 
-    // Access device camera
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: 'user' } }) // 'user' for front camera
-      .then((stream) => {
-        this.video.srcObject = stream;
-        this.video.play(); // Start playing the video
-        this.video.addEventListener('loadeddata', () => {
-          this.detectFaceAndCaptureImage(); // Start detecting face
-        });
-        this.tracking = true; // Set tracking to true
-      })
-      .catch((err) => {
-        console.error('Error accessing the camera:', err);
-        this.presentToast('Error accessing the camera. Please try again.');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
       });
+      this.video.srcObject = stream;
+      this.video.play(); // Start playing the video
+
+      this.video.addEventListener('loadeddata', () => {
+        this.detectFaceAndCaptureImage(); // Start detecting face
+      });
+
+      this.tracking = true; // Set tracking to true
+      console.log('Camera access granted.');
+      this.ToastService.presentSuccessToast(
+        'Camera access granted. Please position your face within the frame.'
+      );
+    } catch (err) {
+      console.error('Error accessing the camera:', err);
+      this.ToastService.presentErrorToast(
+        'Error accessing the camera. Please ensure permissions are granted.'
+      );
+    }
   }
 
   // Detect face and automatically capture image
@@ -209,10 +238,15 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         this.captureImageFromCamera();
       } else {
         console.warn('No face detected.');
+        this.ToastService.presentErrorToast(
+          'No face detected. Please ensure your face is clearly visible.'
+        );
       }
     } catch (error) {
       console.error('Face detection error:', error);
-      this.presentToast('Face detection failed. Please try again.');
+      this.ToastService.presentErrorToast(
+        'Face detection failed. Please try again.'
+      );
     }
 
     if (this.tracking) {
@@ -236,7 +270,9 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     this.selfie = capturedImage; // Store the captured image
 
     console.log('Picture captured successfully');
-    this.presentToast('Picture captured successfully.');
+    this.ToastService.presentSuccessToast(
+      'Picture captured successfully. You can now use this image.'
+    );
 
     this.stopTracking(); // Stop tracking after capturing the image
   }
@@ -259,6 +295,9 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       this.canvasElement.height
     );
     console.log('Tracking stopped.');
+    this.ToastService.presentErrorToast(
+      'Tracking stopped. You can take another selfie if needed.'
+    );
   }
 
   // This method gets called when the purpose of the visit changes
@@ -286,21 +325,25 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   onSubmit() {
     // Check if the user accepted the POPIA terms
     if (!this.accepted_popia) {
-      this.presentToast('You must accept the POPIA terms to proceed.');
+      this.ToastService.presentErrorToast(
+        'You must accept the POPIA terms to proceed.'
+      );
       return;
     }
     // Trim contact number to 10 digits
     if (this.contact.length > 10) {
       this.contact = this.contact.substring(0, 10);
     } else if (this.contact.length < 10) {
-      this.presentToast('Invalid Contact: Must contain exactly 10 digits');
+      this.ToastService.presentErrorToast(
+        'Invalid Contact: Must contain exactly 10 digits'
+      );
       return;
     }
 
     // Validate form fields
     const errorMessages: string[] = this.validateForm();
     if (errorMessages.length > 0) {
-      this.presentToast(errorMessages.join(' '));
+      this.ToastService.presentErrorToast(errorMessages.join(' '));
       return;
     }
 
@@ -343,7 +386,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         error: (err) => {
           console.error('Error submitting visitor data:', err);
-          this.presentToast(
+          this.ToastService.presentErrorToast(
             'An error occurred while submitting data. Please try again.'
           );
         },
@@ -426,18 +469,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     await this.router.navigateByUrl('/home', {
       state: { message: 'POPIA terms must be accepted to continue.' },
     });
-  }
-
-  // Method to show the toast
-  async presentToast(message: string, isSuccess: boolean = false) {
-    const toast = await this.toastController.create({
-      message: message,
-      duration: 3000,
-      position: 'top',
-      cssClass: 'error-toast',
-      icon: isSuccess ? 'checkmark-circle' : '', // Use a success icon for successful messages
-    });
-    await toast.present();
   }
 
   ngOnDestroy() {
