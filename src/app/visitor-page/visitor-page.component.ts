@@ -44,6 +44,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   signature: string | null = null;
   selfie: string | null = null;
   accepted_popia: boolean = false;
+  fileUploaded = false;
 
   // New properties for custom reason
   otherReason: string = ''; // Holds custom reason input
@@ -101,7 +102,10 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     this.startTracking();
 
     const input = event.target as HTMLInputElement;
+
+    // Check if file was uploaded
     if (input.files && input.files.length > 0) {
+      this.fileUploaded = true; // Set flag to true when a file is uploaded
       const file = input.files[0];
 
       // Validate if the file is an image
@@ -126,6 +130,19 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         'No file selected. Please choose an image.'
       );
     }
+  }
+
+  // Handle the case where user clicks the selfie button but doesn't upload a file
+  handleSelfieButtonClick() {
+    this.fileUploaded = false; // Reset fileUploaded flag when button is clicked
+
+    setTimeout(() => {
+      if (!this.fileUploaded) {
+        this.ToastService.presentErrorToast(
+          'No file uploaded. Please try again.'
+        );
+      }
+    }, 5000); // 5 second delay to check if file was uploaded
   }
 
   // Process the selfie with the faceLandmarker
@@ -360,15 +377,25 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     // http://192.168.5.30:5000/checkin
     // https://hades.mabbureau.com/checkin
     // Make the HTTP POST request to the backend
+    // Make the HTTP POST request to the backend
     this.http
       .post('https://hades.mabbureau.com/checkin', visitorData)
       .subscribe({
         next: (response) => {
           console.log('Visitor data submitted successfully:', response);
+
+          // Show success modal
           this.showSuccessModal();
+
+          // Show success toast
+          this.ToastService.presentSuccessToast(
+            'Visitor data submitted successfully!'
+          );
+
+          // Navigate to home after a delay
           setTimeout(() => {
-            this.router.navigate(['/home']); // Navigate after a delay
-          }, 2000); // Adjust the delay as needed
+            this.router.navigate(['/home']); // Adjust the delay as needed
+          }, 2000); // 2 seconds delay before navigating
         },
         error: (err) => {
           console.error('Error submitting visitor data:', err);

@@ -27,20 +27,47 @@
   margin-top: 0; /* Remove top margin from all cards */
 }
 
-/* In global.scss or a specific component's .scss file */
-.success-toast {
-  --background: #4caf50; /* Green background for success */
+.success-toast,
+.error-toast,
+.info-toast {
   --color: #fff;
+  --border-radius: 30px;
+  font-size: 16px;
+  padding: 16px 20px;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  animation: slide-in 0.5s ease-in-out;
+}
+
+.success-toast {
+  --background: #4caf50;
 }
 
 .error-toast {
-  --background: #f44336; /* Red background for error */
-  --color: #fff;
+  --background: #f44336;
 }
 
 .info-toast {
-  --background: #f34b21; /* Blue background for info */
-  --color: #fff;
+  --background: #2196f3;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+/* Animation for toast */
+@keyframes slide-in {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 body {
