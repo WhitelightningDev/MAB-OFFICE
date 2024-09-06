@@ -45,6 +45,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   selfie: string | null = null;
   accepted_popia: boolean = false;
 
+  private capturing: boolean = false;
   // New properties for custom reason
   otherReason: string = ''; // Holds custom reason input
   isOtherReasonVisible: boolean = false; // Tracks visibility of other reason input
@@ -140,10 +141,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
 
       // Check for face landmarks in the selfie
       try {
-        const results = await this.faceLandmarker.detectForVideo(
-          canvas,
-          Date.now()
-        );
+        const results = this.faceLandmarker.detectForVideo(canvas, Date.now());
 
         if (results.faceLandmarks && results.faceLandmarks.length > 0) {
           const drawingUtils = new DrawingUtils(ctx);
@@ -228,13 +226,19 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     this.canvasElement.height = this.video.videoHeight;
 
     try {
-      const results = await this.faceLandmarker.detectForVideo(
+      const results = this.faceLandmarker.detectForVideo(
         this.video,
         Date.now()
       );
 
-      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+      // Check if any face is detected and not already capturing
+      if (
+        results.faceLandmarks &&
+        results.faceLandmarks.length > 0 &&
+        !this.capturing
+      ) {
         console.log('Face detected. Capturing image...');
+        this.capturing = true; // Prevent further captures until this one is processed
         this.captureImageFromCamera();
       } else {
         console.warn('No face detected.');
@@ -249,6 +253,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       );
     }
 
+    // Continue detecting faces
     if (this.tracking) {
       window.requestAnimationFrame(this.detectFaceAndCaptureImage);
     }
@@ -274,10 +279,15 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       'Picture captured successfully. You can now use this image.'
     );
 
+    // Allow capturing again after a brief timeout
+    setTimeout(() => {
+      this.capturing = false; // Reset capturing state
+    }, 2000); // Adjust the timeout duration as needed
+
     this.stopTracking(); // Stop tracking after capturing the image
   }
 
-  // Stop camera and clear video & canvas
+  // Make sure to adjust your stopTracking method accordingly
   stopTracking() {
     this.tracking = false;
 
@@ -295,11 +305,10 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       this.canvasElement.height
     );
     console.log('Tracking stopped.');
-    this.ToastService.presentErrorToast(
+    this.ToastService.presentInfoToast(
       'Tracking stopped. You can take another selfie if needed.'
     );
   }
-
   // This method gets called when the purpose of the visit changes
   onPurposeChange() {
     this.isOtherReasonVisible = this.purpose === 'Other';
