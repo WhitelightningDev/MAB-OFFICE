@@ -5,12 +5,17 @@
   ],
   "cSpell.words": [
     "Blendshapes",
+    "checkmark",
+    "devkit",
     "Fileset",
     "fontawesome",
     "fortawesome",
+    "haptics",
     "homescreen",
+    "ionicons",
     "Landmarker",
     "mediapipe",
+    "offscreencanvas",
     "POPIA"
   ],
   "java.configuration.updateBuildConfiguration": "automatic"
