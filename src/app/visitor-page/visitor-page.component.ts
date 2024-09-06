@@ -97,6 +97,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
 
   // Handles selfie input change
   handleSelfieChange(event: Event) {
+    // Start camera tracking
+    this.startTracking();
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
@@ -106,10 +108,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         this.presentToast('Please upload a valid image file.');
         return;
       }
-
-      // Start camera tracking
-      this.startTracking();
-
       const reader = new FileReader();
       reader.onloadend = (loadEvent) => {
         const img = new Image();
