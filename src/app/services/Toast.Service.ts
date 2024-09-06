@@ -21,7 +21,7 @@ export class ToastService {
     const toast = await this.toastController.create({
       message: message,
       duration: 3000,
-      position: 'bottom',
+      position: 'middle',
       cssClass: 'success-toast',
       icon: 'checkmark-circle', // Success icon
     });
