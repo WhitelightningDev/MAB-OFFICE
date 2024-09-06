@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter', // Your app's unique identifier
@@ -7,19 +7,16 @@ const config: CapacitorConfig = {
   server: {
     cleartext: true, // Allow cleartext traffic (HTTP)
     allowNavigation: [
-      'http://10.0.0.175:3000',
-      'http://192.168.5.30:5000',
-      'https://hades.mabbureau.com',
+      'http://10.0.0.175:3000', // Local development server
+      'http://192.168.5.30:5000', // Another local server
+      'https://hades.mabbureau.com', // Allowed HTTPS site
     ], // Allowed HTTP URLs
   },
-
   plugins: {
-    SplashScreen: {
-      launchShowDuration: 3000, // Duration in milliseconds
-      backgroundColor: '#ffffff', // Background color
-      androidSplashResourceName: 'splash', // Resource name for the splash screen
-      showSpinner: true, // Show spinner or not
-      androidSpinnerStyle: 'large', // Spinner style
+    Camera: {
+      permissions: {
+        camera: 'Allow this app to access your camera', // Camera permission prompt
+      },
     },
   },
 };
