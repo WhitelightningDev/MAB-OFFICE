@@ -333,6 +333,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       );
       return;
     }
+
     // Trim contact number to 10 digits
     if (this.contact.length > 10) {
       this.contact = this.contact.substring(0, 10);
@@ -343,11 +344,9 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    // Validate form fields
-    const errorMessages: string[] = this.validateForm();
-    if (errorMessages.length > 0) {
-      this.ToastService.presentErrorToast(errorMessages.join(' '));
-      return;
+    // Validate form fields, including selfie and signature
+    if (!this.validateForm()) {
+      return; // Stop submission if validation fails
     }
 
     // Determine the reason for the visit
@@ -355,6 +354,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       this.purpose === 'Other' ? this.otherReason : this.purpose;
 
     const date_of_entry = new Date().toISOString(); // Use ISO format for date
+
     // Prepare the visitor data object
     const visitorData = {
       name: this.name,
@@ -364,8 +364,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       idn: this.idn,
       purpose: reasonForVisit,
       organization: this.organization,
-      signature: this.signature, // Make sure signatureImage is captured
-      selfie: this.selfie, // Make sure selfieImage is captured
+      signature: this.signature, // Ensure signature is captured
+      selfie: this.selfie, // Ensure selfie is captured
       accepted_popia: this.accepted_popia,
     };
 
@@ -373,10 +373,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     console.log('Selfie Image:', this.selfie);
     console.log('Signature Image:', this.signature);
 
-    // http://10.0.0.175:3000/api/visitors
-    // http://192.168.5.30:5000/checkin
-    // https://hades.mabbureau.com/checkin
-    // Make the HTTP POST request to the backend
     // Make the HTTP POST request to the backend
     this.http
       .post('https://hades.mabbureau.com/checkin', visitorData)
@@ -406,18 +402,75 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       });
   }
 
-  // Validation for the form fields
-  private validateForm(): string[] {
-    const messages: string[] = [];
-    if (!this.name.trim()) messages.push('Name is required.');
-    if (!this.surname.trim()) messages.push('Surname is required.');
-    if (!this.email.trim()) messages.push('Email Address is required.');
-    if (!this.idn.trim()) messages.push('id number is required');
-    if (!this.purpose.trim()) messages.push('Purpose of Visit is required.');
+  // Validation for the form fields including selfie and signature
+  private validateForm(): boolean {
+    let isValid = true;
+
+    // List of required fields with their respective error messages
+    const validations = [
+      { condition: !this.name.trim(), message: 'Name is required.' },
+      { condition: !this.surname.trim(), message: 'Surname is required.' },
+      {
+        condition: !this.contact.trim() || this.contact.length !== 10,
+        message: 'Contact number must be exactly 10 digits.',
+      },
+      { condition: !this.email.trim(), message: 'Email Address is required.' },
+      { condition: !this.idn.trim(), message: 'ID number is required.' },
+      {
+        condition: !this.purpose.trim(),
+        message: 'Purpose of Visit is required.',
+      },
+      {
+        condition: this.purpose === 'Other' && !this.otherReason.trim(),
+        message: 'Please specify the Other Reason.',
+      },
+      {
+        condition: !this.organization.trim(),
+        message: 'Organization is required.',
+      },
+      {
+        condition: !this.selfie,
+        message: 'Selfie is required. Please upload or capture a selfie.',
+      },
+      {
+        condition: !this.signature,
+        message: 'Signature is required. Please provide your signature.',
+      },
+    ];
+
+    // Loop through validations and show error messages
+    validations.forEach((validation) => {
+      if (validation.condition) {
+        this.ToastService.presentErrorToast(validation.message);
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
+  // Check for empty fields if submit button is clicked when disabled
+  checkForEmptyFields() {
+    const emptyFields = [];
+
+    if (!this.name.trim()) emptyFields.push('Name');
+    if (!this.surname.trim()) emptyFields.push('Surname');
+    if (!this.contact.trim() || this.contact.length !== 10)
+      emptyFields.push('Contact number');
+    if (!this.email.trim()) emptyFields.push('Email Address');
+    if (!this.idn.trim()) emptyFields.push('ID number');
+    if (!this.purpose.trim()) emptyFields.push('Purpose of Visit');
     if (this.purpose === 'Other' && !this.otherReason.trim())
-      messages.push('Please specify the Other Reason.');
-    if (!this.organization.trim()) messages.push('Organization is required.');
-    return messages;
+      emptyFields.push('Other Reason');
+    if (!this.organization.trim()) emptyFields.push('Organization');
+    if (!this.selfie) emptyFields.push('Selfie');
+    if (!this.signature) emptyFields.push('Signature');
+
+    if (emptyFields.length > 0) {
+      this.ToastService.presentErrorToast(
+        `Please fill in the following fields: ${emptyFields.join(', ')}.`
+      );
+    }
   }
 
   ngAfterViewInit() {
