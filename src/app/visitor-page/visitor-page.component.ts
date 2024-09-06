@@ -188,36 +188,22 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
 
   // Start camera and automatically track for face detection
   async startTracking() {
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      console.warn('User media is not available');
-      this.ToastService.presentErrorToast(
-        'Camera not available. Please check your device settings.'
-      );
-      return;
-    }
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user' },
+    });
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
-      });
-      this.video.srcObject = stream;
-      this.video.play(); // Start playing the video
+    this.video.srcObject = stream;
+    this.video.play(); // Start playing the video
 
-      this.video.addEventListener('loadeddata', () => {
-        this.detectFaceAndCaptureImage(); // Start detecting face
-      });
+    this.video.addEventListener('loadeddata', () => {
+      this.detectFaceAndCaptureImage(); // Start detecting face
+    });
 
-      this.tracking = true; // Set tracking to true
-      console.log('Camera access granted.');
-      this.ToastService.presentSuccessToast(
-        'Camera access granted. Please position your face within the frame.'
-      );
-    } catch (err) {
-      console.error('Error accessing the camera:', err);
-      this.ToastService.presentErrorToast(
-        'Error accessing the camera. Please ensure permissions are granted.'
-      );
-    }
+    this.tracking = true; // Set tracking to true
+    console.log('Camera access granted.');
+    this.ToastService.presentSuccessToast(
+      'Camera access granted. Please position your face within the frame.'
+    );
   }
 
   // Detect face and automatically capture image
