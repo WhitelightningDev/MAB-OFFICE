@@ -227,3 +227,18 @@ ion-title {
   color: #555;
   cursor: pointer;
 }
+
+.scrollable-content {
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .input-group {
+    flex-direction: column;
+  }
+
+  .custom-input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

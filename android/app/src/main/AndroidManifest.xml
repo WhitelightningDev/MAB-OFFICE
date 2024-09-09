@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+
+  <uses-feature
+    android:name="android.hardware.camera"
+    android:required="false" />
   <application android:allowBackup="true" android:icon="@drawable/capture_photoroom_png_photoroom__3_" android:label="@string/app_name" android:roundIcon="@drawable/capture_photoroom_png_photoroom__3_" android:supportsRtl="true" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" android:exported="true" android:label="@string/title_activity_main" android:launchMode="singleTask" android:name=".MainActivity" android:theme="@style/AppTheme.NoActionBarLaunch">
             <intent-filter>
@@ -12,6 +16,10 @@
         </provider>
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:maxSdkVersion="32" android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+
+  <uses-permission android:maxSdkVersion="32" android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
     <uses-permission android:maxSdkVersion="32" android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>

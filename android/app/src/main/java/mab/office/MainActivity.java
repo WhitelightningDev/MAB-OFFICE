@@ -1,6 +1,7 @@
 package mab.office;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.plugin.WebView;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -20,6 +21,9 @@ public class MainActivity extends BridgeActivity {
     super();
     trustAllCertificates();
   }
+
+
+
 
   private void trustAllCertificates() {
     TrustManager[] trustAllCerts = new TrustManager[]{
