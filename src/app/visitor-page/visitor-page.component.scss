@@ -227,3 +227,29 @@ ion-title {
   color: #555;
   cursor: pointer;
 }
+
+.custom-button {
+  background-color: #007bff; /* Custom background color */
+  color: white; /* Text color */
+  border: none; /* Remove any default border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px 20px; /* Padding for the button */
+  font-size: 16px; /* Font size */
+  font-weight: bold; /* Make the text bold */
+  display: flex; /* Flexbox layout */
+  align-items: center; /* Center items vertically */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+.custom-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.custom-button ion-label {
+  margin-right: 8px; /* Space between label and icon */
+}
+
+.custom-button ion-icon {
+  font-size: 20px; /* Custom icon size */
+}
