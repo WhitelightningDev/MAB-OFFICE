@@ -16,7 +16,6 @@
 @import "@ionic/angular/css/display.css";
 
 /* Ion Header Styles */
-
 .ion-page {
   position: absolute;
   flex-direction: column;
@@ -81,29 +80,23 @@ body {
 ion-content {
   background-size: 35%;
   background-repeat: no-repeat;
-  // background-image: url("./assets/Backup_logo.png");
   position: relative;
   --background: transparent;
-  height: 100%;
 }
 
+/* Modal Backdrop Styles */
 .modal-backdrop {
-  opacity: 2.5; /* Adjust opacity to your liking */
+  opacity: 0.5; /* Adjust opacity for better visibility */
   z-index: -1; /* Set to sit below toast notifications */
 }
 
-@media (max-width: 768px) {
-  .custom-toast {
-    font-size: 14px; /* Smaller font size on mobile */
-    padding: 8px 16px; /* Adjust padding for smaller screens */
-  }
-
-  .modal-content {
-    margin: 10px; /* Add some margin for smaller screens */
-    max-height: 90vh; /* Limit height for mobile */
-  }
+/* Scrollable Content Styles */
+.scrollable-content {
+  max-height: 100vh; /* Limit height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
+/* Button Styles */
 button {
   color: white;
   border-radius: 5px;
@@ -113,8 +106,6 @@ button {
 
 button:hover {
   color: white;
-  border-radius: 5px;
-  padding: 11px;
   background-color: #609bd4;
   border-color: #5a92c7;
 }
@@ -125,6 +116,23 @@ button:hover {
 
 .btn-primary {
   cursor: pointer; /* Change cursor to pointer for better UX */
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .custom-toast {
+    font-size: 14px; /* Smaller font size on mobile */
+    padding: 8px 16px; /* Adjust padding for smaller screens */
+  }
+
+  .modal-content {
+    margin: 10px; /* Add some margin for smaller screens */
+    max-height: 90vh; /* Limit height for mobile */
+  }
+
+  .scrollable-content {
+    max-height: 100vh; /* Adjust height for smaller devices */
+  }
 }
 
 // .custom-toast {

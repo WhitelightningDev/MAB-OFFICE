@@ -86,145 +86,53 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.faceLandmarker = await FaceLandmarker.createFromOptions(
-      await FilesetResolver.forVisionTasks(this.wasmUrl),
-      {
-        baseOptions: { modelAssetPath: this.modelAssetPath, delegate: 'GPU' },
-        outputFaceBlendshapes: true, // We will draw the face mesh in canvas.
-        runningMode: 'VIDEO',
-      }
-    ); // When FaceLandmarker is ready, you'll see in the console: Graph successfully started running.
-  }
-
-  // Handles selfie input change
-  handleSelfieChange(event: Event) {
-    // Start camera tracking
-    this.startTracking();
-
-    const input = event.target as HTMLInputElement;
-
-    // Check if file was uploaded
-    if (input.files && input.files.length > 0) {
-      this.fileUploaded = true; // Set flag to true when a file is uploaded
-      const file = input.files[0];
-
-      // Validate if the file is an image
-      if (!file.type.startsWith('image/')) {
-        this.ToastService.presentErrorToast(
-          'Invalid file type. Please upload a valid image file.'
-        );
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = (loadEvent) => {
-        const img = new Image();
-        img.src = loadEvent.target?.result as string;
-        img.onload = () => {
-          this.processSelfie(img); // Process the selfie image
-        };
-      };
-      reader.readAsDataURL(file);
-    } else {
-      this.ToastService.presentInfoToast(
-        'No file selected. Please choose an image.'
-      );
-    }
-  }
-
-  // Handle the case where user clicks the selfie button but doesn't upload a file
-  handleSelfieButtonClick() {
-    this.fileUploaded = false; // Reset fileUploaded flag when button is clicked
-
-    setTimeout(() => {
-      if (!this.fileUploaded) {
-        this.ToastService.presentErrorToast(
-          'No file uploaded. Please try again.'
-        );
-      }
-    }, 5000); // 5 second delay to check if file was uploaded
-  }
-
-  // Process the selfie with the faceLandmarker
-  async processSelfie(img: HTMLImageElement) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    if (ctx) {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      // Check for face landmarks in the selfie
-      try {
-        const results = await this.faceLandmarker.detectForVideo(
-          canvas,
-          Date.now()
-        );
-
-        if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-          const drawingUtils = new DrawingUtils(ctx);
-          for (const landmarks of results.faceLandmarks) {
-            [
-              FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-              FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-              FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-            ].forEach((type, i) =>
-              drawingUtils.drawConnectors(landmarks, type, {
-                color: '#C0C0C070',
-                lineWidth: i === 0 ? 1 : 4,
-              })
-            );
-          }
-
-          // Convert canvas to base64
-          this.selfie = canvas.toDataURL('image/jpeg'); // Save selfie image
-          console.log('Selfie captured and processed successfully');
-          this.ToastService.presentSuccessToast(
-            'Selfie captured and processed successfully.'
-          );
-        } else {
-          console.warn('No face detected in the selfie.');
-          this.ToastService.presentErrorToast(
-            'No face detected in the selfie. Please try again.'
-          );
+    try {
+      this.faceLandmarker = await FaceLandmarker.createFromOptions(
+        await FilesetResolver.forVisionTasks(this.wasmUrl),
+        {
+          baseOptions: { modelAssetPath: this.modelAssetPath, delegate: 'GPU' },
+          outputFaceBlendshapes: true,
+          runningMode: 'VIDEO',
         }
-      } catch (error) {
-        console.error('Error processing selfie:', error);
-        this.ToastService.presentErrorToast(
-          'Error processing selfie. Please try again.'
-        );
-      }
-    } else {
-      console.error('Failed to get canvas context');
-      this.ToastService.presentErrorToast(
-        'Unable to process the image. Please try again.'
       );
+    } catch (error) {
+      console.error('Failed to initialize FaceLandmarker:', error);
     }
   }
 
-  // Start camera and automatically track for face detection
-  async startTracking() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' },
-    });
-
-    this.video.srcObject = stream;
-    this.video.play(); // Start playing the video
-
-    this.video.addEventListener('loadeddata', () => {
-      this.detectFaceAndCaptureImage(); // Start detecting face
-    });
-
+  startTracking() {
     this.tracking = true; // Set tracking to true
-    console.log('Camera access granted.');
-    this.ToastService.presentSuccessToast(
-      'Camera access granted. Please position your face within the frame.'
-    );
+
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      console.warn('User media or ML model is not available');
+      this.ToastService.presentErrorToast(
+        'Media devices are not supported on this browser.'
+      );
+      return;
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({
+        video: {
+          facingMode: 'user', // Use the front camera
+        },
+      })
+      .then((stream) => {
+        this.video.srcObject = stream;
+        this.video.addEventListener('loadeddata', () => {
+          this.predictWebcam(); // Start predicting once video is loaded
+        });
+      })
+      .catch((error) => {
+        console.error('Error accessing media devices:', error);
+        this.ToastService.presentErrorToast(
+          'Could not access camera. Please check permissions.'
+        );
+      });
   }
 
-  // Detect face and automatically capture image
-  detectFaceAndCaptureImage = async () => {
+  // Predict the webcam feed and capture the image
+  async predictWebcam() {
     if (!this.tracking) return;
 
     this.canvasElement.width = this.video.videoWidth;
@@ -237,46 +145,47 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       );
 
       if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-        console.log('Face detected. Capturing image...');
+        const drawingUtils = new DrawingUtils(this.canvasCtx!);
+        results.faceLandmarks.forEach((landmarks) => {
+          [
+            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          ].forEach((type, i) =>
+            drawingUtils.drawConnectors(landmarks, type, {
+              color: '#C0C0C070',
+              lineWidth: i === 0 ? 1 : 4,
+            })
+          );
+        });
+
+        // Automatically capture image when face is detected
         this.captureImageFromCamera();
-      } else {
-        console.warn('No face detected.');
-        this.ToastService.presentErrorToast(
-          'No face detected. Please ensure your face is clearly visible.'
-        );
       }
     } catch (error) {
-      console.error('Face detection error:', error);
-      this.ToastService.presentErrorToast(
-        'Face detection failed. Please try again.'
-      );
+      console.error('Error processing video frame:', error);
     }
 
     if (this.tracking) {
-      window.requestAnimationFrame(this.detectFaceAndCaptureImage);
+      window.requestAnimationFrame(() => this.predictWebcam());
     }
-  };
+  }
 
   // Capture image from the camera
   captureImageFromCamera() {
-    // Draw the current video frame onto the canvas
-    this.canvasCtx.drawImage(
+    this.canvasCtx?.drawImage(
       this.video,
       0,
       0,
       this.canvasElement.width,
       this.canvasElement.height
     );
-
-    // Convert canvas to base64 (captured image)
-    const capturedImage = this.canvasElement.toDataURL('image/jpeg');
-    this.selfie = capturedImage; // Store the captured image
+    this.selfie = this.canvasElement.toDataURL('image/jpeg'); // Store the captured image
 
     console.log('Picture captured successfully');
     this.ToastService.presentSuccessToast(
       'Picture captured successfully. You can now use this image.'
     );
-
     this.stopTracking(); // Stop tracking after capturing the image
   }
 
@@ -291,16 +200,13 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.video.srcObject = null;
-    this.canvasCtx.clearRect(
+    this.canvasCtx?.clearRect(
       0,
       0,
       this.canvasElement.width,
       this.canvasElement.height
     );
     console.log('Tracking stopped.');
-    this.ToastService.presentErrorToast(
-      'Tracking stopped. You can take another selfie if needed.'
-    );
   }
 
   // This method gets called when the purpose of the visit changes

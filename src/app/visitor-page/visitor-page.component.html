@@ -54,7 +54,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="container-fluid p-1">
+<div class="container-fluid p-1 scrollable-content">
   <h1 class="mb-3 text-center">Visitor Registration Form</h1>
   <p class="text-center">
     Please fill in the form below to register your details:
@@ -220,32 +220,39 @@
           <label for="selfie">Selfie:</label>
           <div class="input-group">
             <span class="input-group-text"><i class="fas fa-camera"></i></span>
-            <input
-              type="file"
-              id="selfie"
-              required
-              class="form-control custom-input"
-              accept="image/*"
-              capture="environment"
-              (change)="handleSelfieChange($event)"
-              [disabled]="!accepted_popia"
-            />
+            <ion-button
+              [color]="tracking ? 'danger' : 'primary'"
+              (click)="startTracking()"
+            >
+              <ion-label class="ion-padding">{{
+                tracking ? "Stop Tracking" : "Start Tracking"
+              }}</ion-label>
+              <ion-icon [name]="tracking ? 'close' : 'finger-print'"></ion-icon>
+            </ion-button>
+            <video
+              class="user-media"
+              id="user-video"
+              autoplay
+              playsinline
+              style="display: none"
+            ></video>
+            <canvas
+              class="user-media"
+              id="user-canvas"
+              style="display: none"
+            ></canvas>
           </div>
         </div>
 
-        <!-- Video element for capturing selfie -->
-        <video id="user-video" autoplay style="display: none"></video>
-        <!-- Canvas for displaying captured selfie -->
-        <canvas
-          id="user-canvas"
-          width="300"
-          height="300"
-          style="
-            border: 1px solid #5a5a5a;
-            background-color: azure;
-            display: none;
-          "
-        ></canvas>
+        <!-- Display the captured selfie -->
+        <div *ngIf="selfie" class="mt-2">
+          <h5>Captured Selfie:</h5>
+          <img
+            [src]="selfie"
+            alt="Captured Selfie"
+            style="max-width: 50%; border: 1px solid #5a5a5a"
+          />
+        </div>
 
         <div class="form-group mb-2">
           <label for="signature">Signature:</label>
@@ -271,46 +278,6 @@
             Submit
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Success Modal -->
-<div
-  class="modal fade"
-  id="successModal"
-  tabindex="-1"
-  aria-labelledby="successModalLabel"
-  aria-hidden="true"
-  (shown.bs.modal)="presentSuccessToast()"
->
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content text-center">
-      <div class="modal-header">
-        <h5 class="modal-title" id="successModalLabel">Success!</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <i
-          class="fas fa-check-circle"
-          style="color: green; font-size: 48px"
-        ></i>
-        <p>Information saved successfully!</p>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn success-cancel-btn"
-          data-bs-dismiss="modal"
-        >
-          OK
-        </button>
       </div>
     </div>
   </div>
