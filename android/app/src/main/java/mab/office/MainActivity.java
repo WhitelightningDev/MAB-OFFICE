@@ -86,7 +86,6 @@ public class MainActivity extends BridgeActivity {
       // Log error details
       System.err.println("Error during HTTP request:");
       System.err.println("Request URL: " + requestUrl);
-
       System.err.println("Request Method: " + requestMethod);
       System.err.println("Request Body: " + requestBody);
       System.err.println("Exception Message: " + e.getMessage());
