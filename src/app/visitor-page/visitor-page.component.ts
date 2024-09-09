@@ -56,23 +56,20 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm';
   modelAssetPath: string =
     'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
-  // Facial recognition declarations
   video!: HTMLVideoElement;
   canvasElement!: HTMLCanvasElement;
   canvasCtx!: CanvasRenderingContext2D;
-  // A state to toggle functionality.
   showingPreview: boolean = false;
-  // A challenge state for the user.
   userDidBlink: boolean = false;
   tracking: any;
-  lastVideoTime: number = -1; // Added here to track the last video tim
+  lastVideoTime: number = -1;
 
   constructor(
     private renderer: Renderer2,
     private router: Router,
     private ToastService: ToastService,
     private cdRef: ChangeDetectorRef,
-    private http: HttpClient // Inject HttpClient
+    private http: HttpClient
   ) {}
 
   // Method called when POPIA acceptance changes
