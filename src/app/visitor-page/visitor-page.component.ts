@@ -100,7 +100,21 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  startTracking() {
+  // Display a popup to prompt the user
+  showReadyPopup(): Promise<boolean> {
+    return new Promise((resolve) => {
+      // Create and display a custom popup dialog
+      const confirmation = confirm(
+        'Please be ready for face capture. Hold your device upright and click OK when you are ready.'
+      );
+      resolve(confirmation); // Resolve promise based on user action
+    });
+  }
+
+  async startTracking() {
+    const userReady = await this.showReadyPopup(); // Wait for user confirmation
+    if (!userReady) return; // If the user didn't confirm, exit the function
+
     this.tracking = true; // Set tracking to true
 
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
@@ -184,7 +198,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
 
     console.log('Picture captured successfully');
     this.ToastService.presentSuccessToast(
-      'Picture captured successfully. You can now use this image.'
+      'Face Detection successful. You can now use this image.'
     );
     this.stopTracking(); // Stop tracking after capturing the image
   }
