@@ -17,7 +17,8 @@
     "Landmarker",
     "mediapipe",
     "offscreencanvas",
-    "POPIA"
+    "POPIA",
+    "visitorlistbutton"
   ],
   "java.configuration.updateBuildConfiguration": "automatic"
 }
