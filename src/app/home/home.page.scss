@@ -21,16 +21,15 @@ ion-header {
 /* Button Styles                */
 /* ============================ */
 .visitor-button {
-  position: relative; /* Keep as absolute positioning */
-  top: 120px;
-
+  position: relative;
+  top: 400px;
   margin: 30px; /* Margin around button */
   padding: 20px 50px; /* Padding for button */
   --background: #9dd3fb; /* Background color */
   --border-radius: 25px; /* Rounded corners */
   --box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2); /* Box shadow effect */
   font-size: 1.5rem; /* Font size */
-  width: 400px; /* Button width */
+  width: 350px; /* Button width */
   height: 300px; /* Button height */
   transition: background-color 0.3s, transform 0.2s; /* Transition effects */
 }
@@ -138,9 +137,9 @@ button {
   .visitor-button {
     padding: 10px 30px; /* Adjust padding */
     font-size: 1.3rem; /* Font size */
-    max-width: 90%; /* Max width */
+    max-width: 300px; /* Max width */
     position: relative;
-    top: 300px;
+    top: 200px;
   }
 
   .staff-text,
@@ -150,7 +149,7 @@ button {
 
   .info-text {
     position: relative;
-    top: 300px;
+    top: 20%;
   }
 
   svg {
@@ -179,7 +178,7 @@ button {
     padding: 8px 12px; /* Adjust padding for smaller screens */
     font-size: 0.9rem; /* Smaller font size */
     max-width: 90%; /* Full width on smaller screens */
-    height: auto; /* Allow height to adjust automatically */
+    height: 200px; /* Allow height to adjust automatically */
   }
 
   .staff-text,
@@ -189,5 +188,29 @@ button {
 
   svg {
     width: 60px; /* Adjust SVG width for smaller screens */
+  }
+}
+
+/* Landscape mode */
+@media screen and (orientation: landscape) {
+  ion-content {
+    background-size: 25%; /* Adjust background size for landscape */
+  }
+
+  .visitor-button {
+    width: 300px; /* Button width in landscape */
+    height: 250px; /* Button height in landscape */
+    font-size: 1.6rem;
+    position: relative;
+    top: 10px;
+  }
+
+  .info-text {
+    margin-top: 150px; /* Increase top margin in landscape */
+    top: -100px;
+  }
+
+  svg {
+    width: 120px; /* Adjust SVG size for landscape */
   }
 }
