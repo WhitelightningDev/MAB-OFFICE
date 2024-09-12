@@ -266,6 +266,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       this.email = details.email || '';
       this.contact = details.contact || '';
       this.organization = details.organization || '';
+      this.idn = details.idn || '';
       console.log('Form populated with previous details:', details);
     }
   }
