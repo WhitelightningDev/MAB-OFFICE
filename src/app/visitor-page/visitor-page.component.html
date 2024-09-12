@@ -72,7 +72,9 @@
               class="form-control custom-input"
               placeholder="Enter your name"
               [(ngModel)]="name"
+              (ngModelChange)="handleNameInputChange()"
               [disabled]="!accepted_popia"
+              minlength="1"
             />
           </div>
         </div>
@@ -90,7 +92,9 @@
               class="form-control custom-input"
               placeholder="Enter your surname"
               [(ngModel)]="surname"
+              (ngModelChange)="handleSurnameInputChange()"
               [disabled]="!accepted_popia"
+              minlength="1"
             />
           </div>
         </div>
@@ -102,14 +106,16 @@
             <input
               type="tel"
               id="contact"
-              min="10"
-              max="10"
+              pattern="[0-9]{10}"
               required
               class="form-control custom-input"
               placeholder="Enter your contact"
               [(ngModel)]="contact"
               [disabled]="!accepted_popia"
             />
+          </div>
+          <div *ngIf="contact && contact.length !== 10" class="text-danger">
+            Contact must be exactly 10 digits.
           </div>
         </div>
 
@@ -129,6 +135,9 @@
               [disabled]="!accepted_popia"
             />
           </div>
+          <div *ngIf="email && !isEmailValid(email)" class="text-danger">
+            Please enter a valid email address.
+          </div>
         </div>
 
         <div class="form-group mb-2">
@@ -136,7 +145,7 @@
           <div class="input-group">
             <span class="input-group-text"><i class="fas fa-id-card"></i></span>
             <input
-              type="text"
+              type="number"
               id="idn"
               required
               class="form-control custom-input"
@@ -214,7 +223,7 @@
     <div class="col-md-6">
       <div class="card p-3 mb-3 h-100">
         <div class="form-group mb-2">
-          <label for="selfie">Selfie:</label>
+          <label for="selfie">Photo:</label>
           <div class="input-group">
             <span class="input-group-text"><i class="fas fa-camera"></i></span>
             <ion-button
@@ -222,7 +231,7 @@
               (click)="startTracking()"
             >
               <ion-label class="ion-padding">{{
-                tracking ? "Stop Tracking" : "Start Tracking"
+                tracking ? "Stop Tracking" : "Capture Photograph"
               }}</ion-label>
               <ion-icon [name]="tracking ? 'close' : 'finger-print'"></ion-icon>
             </ion-button>

@@ -1,3 +1,4 @@
+import { PopupService } from './../services/popup.service';
 import {
   Component,
   AfterViewInit,
@@ -8,11 +9,12 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { Observable, Subscription } from 'rxjs';
+import { debounceTime, Observable, Subject, Subscription } from 'rxjs';
 import { popiaQuestions } from '../services/popia.questions';
 import { ToastService } from '../services/Toast.Service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as bootstrap from 'bootstrap';
+
 import {
   Category,
   DrawingUtils,
@@ -45,7 +47,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   selfie: string | null = null;
   accepted_popia: boolean = false;
   fileUploaded = false;
-
   // New properties for custom reason
   otherReason: string = ''; // Holds custom reason input
   isOtherReasonVisible: boolean = false; // Tracks visibility of other reason input
@@ -63,15 +64,27 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   userDidBlink: boolean = false;
   tracking: any;
   lastVideoTime: number = -1;
+  // Subjects for debouncing
+  private nameChanged: Subject<string> = new Subject();
+  private surnameChanged: Subject<string> = new Subject();
 
   constructor(
+    private popup: PopupService,
     private renderer: Renderer2,
     private router: Router,
     private ToastService: ToastService,
     private cdRef: ChangeDetectorRef,
     private http: HttpClient
-  ) {}
-
+  ) {
+    // Set up debouncing for name input
+    this.nameChanged.pipe(debounceTime(500)).subscribe((value) => {
+      this.checkPreviousSignIn();
+    });
+    // Set up debouncing for surname input
+    this.surnameChanged.pipe(debounceTime(500)).subscribe((value) => {
+      this.checkPreviousSignIn();
+    });
+  }
   // Method called when POPIA acceptance changes
   onPOPIAAccepted(accepted: boolean) {
     // this.accepted_popia = accepted;
@@ -200,6 +213,63 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     this.stopTracking(); // Stop tracking after capturing the image
   }
 
+  // Handle name input change to trigger debounce
+  handleNameInputChange() {
+    this.nameChanged.next(this.name);
+  }
+
+  // Handle surname input change to trigger debounce
+  handleSurnameInputChange() {
+    this.surnameChanged.next(this.surname);
+  }
+
+  async checkPreviousSignIn() {
+    // Check if both name and surname are provided
+    if (this.name.trim() && this.surname.trim()) {
+      try {
+        const response = await this.http
+          .get<{ hasSignedIn?: boolean }>(
+            `https://hades.mabbureau.com/recur?name=${this.name}&surname=${this.surname}`
+          )
+          .toPromise();
+
+        console.log('Response from server:', response);
+
+        const result = await response;
+
+        if (response) {
+          // Use the popup service to show the confirm dialog
+          const userConfirmed = await this.popup.presentConfirmDialog(
+            'Previous Sign-In Detected',
+            'You have previously signed in with these details. Would you like to use the previous information?'
+          );
+
+          if (userConfirmed) {
+            // User clicked OK, populate the form with the retrieved details
+            this.populateFormWithPreviousDetails(response);
+          } else {
+            // User clicked Cancel, let them continue filling in the form manually
+            console.log('User chose to continue filling in manually');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking previous sign-in:', error);
+        this.ToastService.presentErrorToast(
+          'An error occurred while checking previous sign-in. Please try again.'
+        );
+      }
+    }
+  }
+
+  populateFormWithPreviousDetails(details: any) {
+    if (details) {
+      this.email = details.email || '';
+      this.contact = details.contact || '';
+      this.organization = details.organization || '';
+      console.log('Form populated with previous details:', details);
+    }
+  }
+
   // Stop camera and clear video & canvas
   stopTracking() {
     this.tracking = false;
@@ -225,6 +295,11 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isOtherReasonVisible = this.purpose === 'Other';
   }
 
+  isEmailValid(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
   // Validate form fields
   isFormValid(): boolean {
     return (
@@ -242,7 +317,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   // Handle form submission
-  onSubmit() {
+  async onSubmit() {
     // Check if the user accepted the POPIA terms
     if (!this.accepted_popia) {
       this.ToastService.presentErrorToast(
@@ -251,7 +326,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    // Trim contact number to 10 digits
+    // Trim contact number to 10 digits and validate length
     if (this.contact.length > 10) {
       this.contact = this.contact.substring(0, 10);
     } else if (this.contact.length < 10) {
@@ -284,39 +359,38 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       signature: this.signature, // Ensure signature is captured
       selfie: this.selfie, // Ensure selfie is captured
       accepted_popia: this.accepted_popia,
+      date_of_entry, // Include date_of_entry in visitor data
     };
 
     // Log selfie and signature images for debugging
     console.log('Selfie Image:', this.selfie);
     console.log('Signature Image:', this.signature);
 
-    // Make the HTTP POST request to the backend
-    this.http
-      .post('https://hades.mabbureau.com/checkin', visitorData)
-      .subscribe({
-        next: (response) => {
-          console.log('Visitor data submitted successfully:', response);
+    try {
+      // Make the HTTP POST request to the backend
+      const response = await this.http
+        .post('https://hades.mabbureau.com/checkin', visitorData)
+        .toPromise();
+      console.log('Visitor data submitted successfully:', response);
 
-          // Show success modal
-          this.showSuccessModal();
+      // Show success modal
+      this.showSuccessModal();
 
-          // Show success toast
-          this.ToastService.presentSuccessToast(
-            'Visitor data submitted successfully!'
-          );
+      // Show success toast
+      this.ToastService.presentSuccessToast(
+        'Visitor data submitted successfully!'
+      );
 
-          // Navigate to home after a delay
-          setTimeout(() => {
-            this.router.navigate(['/home']); // Adjust the delay as needed
-          }, 2000); // 2 seconds delay before navigating
-        },
-        error: (err) => {
-          console.error('Error submitting visitor data:', err);
-          this.ToastService.presentErrorToast(
-            'An error occurred while submitting data. Please try again.'
-          );
-        },
-      });
+      // Navigate to home after a delay
+      setTimeout(() => {
+        this.router.navigate(['/home']); // Adjust the delay as needed
+      }, 2000); // 2 seconds delay before navigating
+    } catch (err) {
+      console.error('Error submitting visitor data:', err);
+      this.ToastService.presentErrorToast(
+        'An error occurred while submitting data. Please try again.'
+      );
+    }
   }
 
   // Validation for the form fields including selfie and signature
