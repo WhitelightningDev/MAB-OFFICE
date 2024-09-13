@@ -121,98 +121,6 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     });
   }
 
-  async startTracking() {
-    const userReady = await this.showReadyPopup(); // Wait for user confirmation
-    if (!userReady) return; // If the user didn't confirm, exit the function
-
-    this.tracking = true; // Set tracking to true
-
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      console.warn('User media or ML model is not available');
-      this.ToastService.presentErrorToast(
-        'Media devices are not supported on this browser.'
-      );
-      return;
-    }
-
-    navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          facingMode: 'user', // Use the front camera
-        },
-      })
-      .then((stream) => {
-        this.video.srcObject = stream;
-        this.video.addEventListener('loadeddata', () => {
-          this.predictWebcam(); // Start predicting once video is loaded
-        });
-      })
-      .catch((error) => {
-        console.error('Error accessing media devices:', error);
-        this.ToastService.presentErrorToast(
-          'Could not access camera. Please check permissions.'
-        );
-      });
-  }
-
-  // Predict the webcam feed and capture the image
-  async predictWebcam() {
-    if (!this.tracking) return;
-
-    this.canvasElement.width = this.video.videoWidth;
-    this.canvasElement.height = this.video.videoHeight;
-
-    try {
-      const results = await this.faceLandmarker.detectForVideo(
-        this.video,
-        Date.now()
-      );
-
-      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-        const drawingUtils = new DrawingUtils(this.canvasCtx!);
-        results.faceLandmarks.forEach((landmarks) => {
-          [
-            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-          ].forEach((type, i) =>
-            drawingUtils.drawConnectors(landmarks, type, {
-              color: '#C0C0C070',
-              lineWidth: i === 0 ? 1 : 4,
-            })
-          );
-        });
-
-        // Automatically capture image when face is detected
-        this.captureImageFromCamera();
-      }
-    } catch (error) {
-      console.error('Error processing video frame:', error);
-    }
-
-    if (this.tracking) {
-      window.requestAnimationFrame(() => this.predictWebcam());
-    }
-  }
-
-  // Capture image from the camera
-  captureImageFromCamera() {
-    this.canvasCtx?.drawImage(
-      this.video,
-      0,
-      0,
-      this.canvasElement.width,
-      this.canvasElement.height
-    );
-    this.selfie = this.canvasElement.toDataURL('image/jpeg'); // Store the captured image
-
-    console.log('Picture captured successfully');
-    this.ToastService.presentSuccessToast(
-      'Face Detection successful. You can now use this image.'
-    );
-    this.stopTracking(); // Stop tracking after capturing the image
-  }
-
   // Handle name input change to trigger debounce
   handleNameInputChange() {
     this.nameChanged.next(this.name);
@@ -254,11 +162,106 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         }
       } catch (error) {
         console.error('Error checking previous sign-in:', error);
-        this.ToastService.presentErrorToast(
-          'An error occurred while checking previous sign-in. Please try again.'
+        this.ToastService.presentInfoToast(
+          'No previous sign in detected, Please continue filling in the form.'
         );
       }
     }
+  }
+
+  async startTracking() {
+    const userReady = await this.showReadyPopup(); // Wait for user confirmation
+    if (!userReady) return; // If the user didn't confirm, exit the function
+
+    this.tracking = true; // Set tracking to true
+
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      console.warn('User media or ML model is not available');
+      this.ToastService.presentErrorToast(
+        'Media devices are not supported on this browser.'
+      );
+      return;
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({
+        video: {
+          facingMode: 'user', // Use the front camera
+        },
+      })
+      .then((stream) => {
+        this.video.srcObject = stream;
+        this.video.addEventListener('loadeddata', () => {
+          this.predictWebcam(); // Start predicting once video is loaded
+        });
+      })
+      .catch((error) => {
+        console.error('Error accessing media devices:', error);
+        this.ToastService.presentErrorToast(
+          'Could not access camera. Please check permissions.'
+        );
+      });
+  }
+
+  // Predict the webcam feed and capture the image
+  async predictWebcam() {
+    if (!this.tracking) return;
+
+    this.canvasElement.width = this.video.videoWidth / 2;
+    this.canvasElement.height = this.video.videoHeight / 2;
+
+    try {
+      const results = await this.faceLandmarker.detectForVideo(
+        this.video,
+        Date.now()
+      );
+
+      if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+        const drawingUtils = new DrawingUtils(this.canvasCtx!);
+        results.faceLandmarks.forEach((landmarks) => {
+          [
+            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          ].forEach((type, i) =>
+            drawingUtils.drawConnectors(landmarks, type, {
+              color: '#C0C0C070',
+              lineWidth: i === 0 ? 1 : 4,
+            })
+          );
+        });
+
+        // Automatically capture image when face is detected
+        this.captureImageFromCamera();
+
+        // Optionally, stop tracking after capturing the first image
+        // this.stopTracking();
+      }
+    } catch (error) {
+      console.error('Error processing video frame:', error);
+    }
+
+    if (this.tracking) {
+      window.requestAnimationFrame(() => this.predictWebcam());
+    }
+  }
+
+  // Capture image from the camera
+  captureImageFromCamera() {
+    this.canvasCtx?.drawImage(
+      this.video,
+      0,
+      0,
+      this.canvasElement.width,
+      this.canvasElement.height
+    );
+    this.selfie = this.canvasElement.toDataURL('image/jpeg'); // Store the captured image
+
+    console.log('Picture captured successfully');
+    this.ToastService.presentSuccessToast(
+      'Face Detection successful. You can now use this image.'
+    );
+    this.stopTracking(); // Stop tracking after capturing the image
   }
 
   populateFormWithPreviousDetails(details: any) {
@@ -273,48 +276,29 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
 
   // Stop camera and clear video & canvas
   stopTracking() {
-    this.tracking = false;
+    this.tracking = false; // Set tracking to false to prevent further processing
 
     if (this.video.srcObject) {
+      // Stop all video tracks
       (this.video.srcObject as MediaStream)
         .getTracks()
         .forEach((track) => track.stop());
     }
 
-    this.video.srcObject = null;
+    this.video.srcObject = null; // Clear the video source
     this.canvasCtx?.clearRect(
+      // Clear the canvas
       0,
       0,
       this.canvasElement.width,
       this.canvasElement.height
     );
+
+    // Optionally, you can also reset the canvas dimensions
+    this.canvasElement.width = 0;
+    this.canvasElement.height = 0;
+
     console.log('Tracking stopped.');
-  }
-
-  // This method gets called when the purpose of the visit changes
-  onPurposeChange() {
-    this.isOtherReasonVisible = this.purpose === 'Other';
-  }
-
-  isEmailValid(email: string): boolean {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  }
-
-  // Validate form fields
-  isFormValid(): boolean {
-    return (
-      this.name.trim() !== '' &&
-      this.surname.trim() !== '' &&
-      this.contact.trim().length === 10 && // Adjust length check as needed
-      this.idn.trim().length === 13 &&
-      this.email.trim() !== '' &&
-      this.purpose.trim() !== '' &&
-      (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
-      this.organization.trim() !== '' && // Ensure organization is not empty
-      // this.acceptedPOPIA
-      this.accepted_popia // Ensure POPIA is accepted
-    );
   }
 
   // Handle form submission
@@ -392,6 +376,32 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
         'An error occurred while submitting data. Please try again.'
       );
     }
+  }
+
+  // This method gets called when the purpose of the visit changes
+  onPurposeChange() {
+    this.isOtherReasonVisible = this.purpose === 'Other';
+  }
+
+  isEmailValid(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  // Validate form fields
+  isFormValid(): boolean {
+    return (
+      this.name.trim() !== '' &&
+      this.surname.trim() !== '' &&
+      this.contact.trim().length === 10 && // Adjust length check as needed
+      this.idn.trim().length === 13 &&
+      this.email.trim() !== '' &&
+      this.purpose.trim() !== '' &&
+      (this.purpose !== 'Other' || this.otherReason.trim() !== '') &&
+      this.organization.trim() !== '' && // Ensure organization is not empty
+      // this.acceptedPOPIA
+      this.accepted_popia // Ensure POPIA is accepted
+    );
   }
 
   // Validation for the form fields including selfie and signature
@@ -564,9 +574,8 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     ) as HTMLCanvasElement;
     if (!this.canvas) return; // Ensure canvas element exists
     this.ctx = this.canvas.getContext('2d')!;
-
     this.canvas.width = 340; // Set your desired width
-    this.canvas.height = 150; // Set your desired height
+    this.canvas.height = 200; // Set your desired height
     this.ctx.lineWidth = 2; // Set line width
     this.ctx.lineCap = 'round'; // Round line caps
     this.ctx.strokeStyle = 'black'; // Line color

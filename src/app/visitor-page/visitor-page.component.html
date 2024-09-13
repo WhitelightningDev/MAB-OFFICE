@@ -152,6 +152,8 @@
               placeholder="Enter your ID Number"
               [(ngModel)]="idn"
               [disabled]="!accepted_popia"
+              inputmode="numeric"
+              pattern="[0-9]*"
             />
           </div>
         </div>
@@ -228,7 +230,7 @@
             <span class="input-group-text"><i class="fas fa-camera"></i></span>
             <ion-button
               [color]="tracking ? 'danger' : 'primary'"
-              (click)="startTracking()"
+              (click)="tracking ? stopTracking() : startTracking()"
             >
               <ion-label class="ion-padding">{{
                 tracking ? "Stop Tracking" : "Capture Photograph"

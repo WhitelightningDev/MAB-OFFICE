@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter', // Your app's unique identifier
-  appName: 'ionic-app-base', // Your app's name
+  appName: 'MAB Bureau Office App', // Your app's name
   webDir: 'www', // Directory for web assets
   server: {
     cleartext: true, // Allow cleartext traffic (HTTP)
