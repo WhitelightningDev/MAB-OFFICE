@@ -253,3 +253,27 @@ ion-title {
 .custom-button ion-icon {
   font-size: 20px; /* Custom icon size */
 }
+
+.loading-overlay {
+  position: fixed; /* Stay in place */
+  top: 0; /* Sit on top */
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 9999; /* Make sure it stays on top */
+  backdrop-filter: blur(5px); /* Blur the background */
+}
+
+.loading-spinner {
+  margin-bottom: 10px; /* Add space below the spinner */
+}
+
+.loading-text {
+  color: white; /* Text color */
+  font-size: 1.2em; /* Adjust text size */
+  text-align: center; /* Center the text */
+}

@@ -21,7 +21,7 @@ export class ToastService {
     const toast = await this.toastController.create({
       message: message,
       duration: 2500,
-      position: 'middle',
+      position: 'top',
       cssClass: 'success-toast',
       icon: 'checkmark-circle', // Success icon
     });
@@ -31,8 +31,8 @@ export class ToastService {
   async presentErrorToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 4000,
-      position: 'middle',
+      duration: 2500,
+      position: 'top',
       cssClass: 'error-toast',
       icon: 'alert-circle', // Error icon
     });
@@ -43,7 +43,7 @@ export class ToastService {
     const toast = await this.toastController.create({
       message: message,
       duration: 2500,
-      position: 'middle',
+      position: 'top',
       cssClass: 'info-toast',
       icon: 'information-circle', // Info icon
     });

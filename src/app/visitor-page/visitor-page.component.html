@@ -1,4 +1,10 @@
 <!-- Header with the back button that takes users to the home page -->
+<!-- Loading overlay -->
+<div *ngIf="isModelLoading" class="loading-overlay">
+  <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+  <p class="loading-text">Loading facial recognition model, please wait...</p>
+</div>
+
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -221,6 +227,12 @@
       </div>
     </div>
 
+    <!-- Loading indicator
+    <div *ngIf="isModelLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading facial recognition model, please wait...</p>
+    </div> -->
+
     <!-- Right Card -->
     <div class="col-md-6">
       <div class="card p-3 mb-3 h-100">
@@ -231,6 +243,7 @@
             <ion-button
               [color]="tracking ? 'danger' : 'primary'"
               (click)="tracking ? stopTracking() : startTracking()"
+              [disabled]="isModelLoading"
             >
               <ion-label class="ion-padding">{{
                 tracking ? "Stop Tracking" : "Capture Photograph"

@@ -62,11 +62,19 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   canvasCtx!: CanvasRenderingContext2D;
   showingPreview: boolean = false;
   userDidBlink: boolean = false;
-  tracking: any;
+  tracking: boolean = false;
+  faceDetected: boolean = false;
   lastVideoTime: number = -1;
+  isModelLoading: boolean = true;
+  errorToastShown: boolean = false;
+
   // Subjects for debouncing
   private nameChanged: Subject<string> = new Subject();
   private surnameChanged: Subject<string> = new Subject();
+
+  // Countdown control
+  countdownInProgress: boolean = false;
+  countdownInterval: any;
 
   constructor(
     private popup: PopupService,
@@ -96,6 +104,7 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // Preload the Face Landmarker model on component initialization
     try {
       this.faceLandmarker = await FaceLandmarker.createFromOptions(
         await FilesetResolver.forVisionTasks(this.wasmUrl),
@@ -105,8 +114,13 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
           runningMode: 'VIDEO',
         }
       );
+      this.isModelLoading = false; // Model preloaded, ready to use
+      console.log('Face Landmarker model preloaded successfully.');
     } catch (error) {
-      console.error('Failed to initialize FaceLandmarker:', error);
+      console.error('Failed to initialize Face Landmarker:', error);
+      this.ToastService.presentErrorToast(
+        'Failed to load facial recognition model.'
+      );
     }
   }
 
@@ -170,40 +184,50 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   async startTracking() {
-    const userReady = await this.showReadyPopup(); // Wait for user confirmation
-    if (!userReady) return; // If the user didn't confirm, exit the function
+    // Show spinner during model loading
+    this.isModelLoading = true; // Start loading the model
+    this.faceDetected = false; // Reset face detected state
+    this.errorToastShown = false; // Flag to track if the error toast has been shown
 
-    this.tracking = true; // Set tracking to true
+    const userReady = await this.showReadyPopup();
+    if (!userReady) {
+      this.isModelLoading = false; // Hide spinner if the user cancels
+      return;
+    }
 
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
       console.warn('User media or ML model is not available');
       this.ToastService.presentErrorToast(
         'Media devices are not supported on this browser.'
       );
+      this.isModelLoading = false; // Hide spinner if media is not supported
       return;
     }
 
-    navigator.mediaDevices
-      .getUserMedia({
+    this.tracking = true;
+
+    // Access camera and start video stream
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: 'user', // Use the front camera
+          facingMode: 'user',
         },
-      })
-      .then((stream) => {
-        this.video.srcObject = stream;
-        this.video.addEventListener('loadeddata', () => {
-          this.predictWebcam(); // Start predicting once video is loaded
-        });
-      })
-      .catch((error) => {
-        console.error('Error accessing media devices:', error);
-        this.ToastService.presentErrorToast(
-          'Could not access camera. Please check permissions.'
-        );
       });
+
+      this.video.srcObject = stream;
+      this.video.addEventListener('loadeddata', () => {
+        this.isModelLoading = false; // Hide spinner once the video stream is ready
+        this.predictWebcam();
+      });
+    } catch (error) {
+      console.error('Error accessing media devices:', error);
+      this.ToastService.presentErrorToast(
+        'Could not access camera. Please check permissions.'
+      );
+      this.isModelLoading = false; // Hide spinner if there was an error
+    }
   }
 
-  // Predict the webcam feed and capture the image
   async predictWebcam() {
     if (!this.tracking) return;
 
@@ -231,11 +255,27 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
           );
         });
 
-        // Automatically capture image when face is detected
-        this.captureImageFromCamera();
+        // Reset error toast flag when a face is detected
+        this.errorToastShown = false;
 
-        // Optionally, stop tracking after capturing the first image
-        // this.stopTracking();
+        if (!this.faceDetected) {
+          this.faceDetected = true;
+          this.ToastService.presentInfoToast(
+            'Face detected! Please keep still for 2 seconds.'
+          );
+          this.startFaceCountdown();
+        }
+      } else {
+        this.faceDetected = false;
+        if (this.countdownInProgress) {
+          this.pauseFaceCountdown();
+        } else if (!this.errorToastShown) {
+          // Show error toast only if it hasn't been shown yet
+          this.ToastService.presentErrorToast(
+            'Face not detected. Please bring your face into view.'
+          );
+          this.errorToastShown = true; // Set the flag to true to avoid repeating the toast
+        }
       }
     } catch (error) {
       console.error('Error processing video frame:', error);
@@ -246,7 +286,29 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  // Capture image from the camera
+  startFaceCountdown() {
+    this.countdownInProgress = true;
+    let secondsRemaining = 2;
+
+    this.countdownInterval = setInterval(() => {
+      if (this.faceDetected) {
+        secondsRemaining--;
+
+        if (secondsRemaining <= 0) {
+          clearInterval(this.countdownInterval);
+          this.captureImageFromCamera();
+        }
+      } else {
+        this.pauseFaceCountdown();
+      }
+    }, 800);
+  }
+
+  pauseFaceCountdown() {
+    clearInterval(this.countdownInterval);
+    this.countdownInProgress = false;
+  }
+
   captureImageFromCamera() {
     this.canvasCtx?.drawImage(
       this.video,
@@ -255,28 +317,18 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
       this.canvasElement.width,
       this.canvasElement.height
     );
-    this.selfie = this.canvasElement.toDataURL('image/jpeg'); // Store the captured image
+    this.selfie = this.canvasElement.toDataURL('image/jpeg');
 
-    console.log('Picture captured successfully');
     this.ToastService.presentSuccessToast(
       'Face Detection successful. You can now use this image.'
     );
-    this.stopTracking(); // Stop tracking after capturing the image
-  }
-
-  populateFormWithPreviousDetails(details: any) {
-    if (details) {
-      this.email = details.email || '';
-      this.contact = details.contact || '';
-      this.organization = details.organization || '';
-      this.idn = details.idn || '';
-      console.log('Form populated with previous details:', details);
-    }
+    this.stopTracking();
   }
 
   // Stop camera and clear video & canvas
   stopTracking() {
     this.tracking = false; // Set tracking to false to prevent further processing
+    clearInterval(this.countdownInterval);
 
     if (this.video.srcObject) {
       // Stop all video tracks
@@ -299,6 +351,16 @@ export class VisitorPageComponent implements AfterViewInit, OnDestroy, OnInit {
     this.canvasElement.height = 0;
 
     console.log('Tracking stopped.');
+  }
+
+  populateFormWithPreviousDetails(details: any) {
+    if (details) {
+      this.email = details.email || '';
+      this.contact = details.contact || '';
+      this.organization = details.organization || '';
+      this.idn = details.idn || '';
+      console.log('Form populated with previous details:', details);
+    }
   }
 
   // Handle form submission
